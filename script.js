@@ -8,7 +8,7 @@ const cardEle = document.querySelector(`.card`);
 const btnNew = document.querySelector(`.btn--new`);
 const btnRoll = document.querySelector(`.btn--roll`);
 const btnHold = document.querySelector(`.btn--hold`);
-const btnSpell = document.querySelector(`btn--spell`);
+const btnSpell = document.querySelector(`.btn--spell`);
 const currScorePlayer0 = document.getElementById(`current--0`);
 const currScorePlayer1 = document.getElementById(`current--1`);
 const btnAbout = document.querySelector(`.about`);
@@ -22,6 +22,7 @@ let omusubiBool = false;
 let sarukaniRevenge = -1; // This will keep track of if any player can take revenge. -1 means neither player, 0 is player 1, 1 is player 2.
 let issunBool = false;
 let ofudaBool = false;
+let onibabaBool = false;
 let kintarouBool = false;
 
 const deck = [
@@ -126,7 +127,6 @@ const totalScores = [0, 0];
 diceEle.classList.add(`hidden`);
 score1Ele.textContent = 0;
 score0Ele.textContent = 0;
-console.log(`testing`);
 
 function endTurn() {
   // Player gets extra points if ended turn with tsuru no ongaesi
@@ -135,14 +135,11 @@ function endTurn() {
     tsuruBool = false;
   }
 
-  // if player ended turn with omusubi, this will be turned off
-  if (omusubiBool) {
-    omusubiBool = false;
-  }
+  // Turn off any boolean values that are no longer relevant
+  omusubiBool = false;
+  issunBool = false;
 
-  currentScore += 1;
   totalScores[activePlayer] += currentScore;
-  console.log(totalScores[activePlayer]);
   document.getElementById(`score--${activePlayer}`).textContent =
     totalScores[activePlayer];
   currentScore = 0;
@@ -193,6 +190,11 @@ function cardHandler(cardDrawn) {
   if (omusubiBool) {
     currentScore += 40;
     omusubiBool = false;
+  }
+
+  if (issunBool) {
+    currentScore *= 4;
+    issunBool = false;
   }
 
   // Cards with alternate versions are handled first, according to their conditiosn
@@ -251,22 +253,45 @@ function cardHandler(cardDrawn) {
     currentScore *= 3;
   }
 
-  //   if (cardDrawn === `sanmainoOfuda`) { // --> This will be moved to spell
-  //     ofudaBool[activePlayer] = true;
-  //   }
+  if (cardDrawn === `issunboushi`) {
+    currentScore = Math.trunc(currentScore / 2);
+    issunBool = true;
+  }
 
   if (cardDrawn === `tsurunoOngaeshi`) {
     tsuruBool = true;
   }
-
-  if (cardDrawn.spell) {
-    // activate use spell button
-  }
+  // Update the current score
+  document.getElementById(`current--${activePlayer}`).textContent =
+    currentScore;
 }
 
-function useSpell(cardDrawn) {
-  if (cardDrawn === `saruKani`) {
-    console.log(`saru kani spell`);
+function useSpell() {
+  let cardDrawn = deck[shufflerArray[deckIndex - 1]].cardId;
+
+  //SaruKani Spells
+  if (cardDrawn === `saruKani` && !sarukaniRevenge == activePlayer) {
+    let opponent = activePlayer === 1 ? 0 : 1;
+    totalScores[opponent] -= 100;
+    currentScore += 100;
+    document.getElementById(`current--${activePlayer}`).textContent =
+      currentScore;
+    document.getElementById(`score--${opponent}`).textContent =
+      totalScores[activePlayer];
+    sarukaniRevenge = opponent;
+  } else if (cardDrawn === `saruKani` && sarukaniRevenge == opponent) {
+    let opponent = activePlayer === 1 ? 0 : 1;
+    totalScores[opponent] -= 250;
+    document.getElementById(`score--${opponent}`).textContent =
+      totalScores[activePlayer];
+    sarukaniRevenge = -1; // deactivate
+  }
+
+  //Sanmai no Ofuda Spell
+  if (cardDrawn === `sanmainoOfuda` && !onibabaBool) {
+    onibabaBool = true;
+    ofudaBool = true;
+    // Show some fuda graphic element on that player's thing
   }
 }
 
@@ -276,15 +301,13 @@ function useSpell(cardDrawn) {
 btnNew.addEventListener(`click`, function () {
   diceEle.classList.remove(`hidden`);
   let cardDrawn = deck[shufflerArray[deckIndex]].cardId;
-  // if (cardsWithSpells.includes(cardDrawn)) {
-  //   btnSpell.disabled = false;
-  // } else {
-  //   btnSpell.disabled = true;
-  // }
+  if (cardsWithSpells.includes(cardDrawn)) {
+    btnSpell.disabled = false;
+  } else {
+    btnSpell.disabled = true;
+  }
   cardHandler(cardDrawn);
 
-  document.getElementById(`current--${activePlayer}`).textContent =
-    currentScore;
   deckIndex = deckIndex === deck.length - 1 ? 0 : deckIndex + 1;
 });
 
@@ -309,7 +332,7 @@ btnHold.addEventListener(`click`, function () {
 });
 
 btnSpell.addEventListener(`click`, function () {
-  useSpell(cardDrawn);
+  useSpell();
 });
 
 // TODO Under construction
