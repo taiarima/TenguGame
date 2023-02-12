@@ -8,12 +8,16 @@ const cardEle = document.querySelector(`.card`);
 const btnNew = document.querySelector(`.btn--new`);
 const btnRoll = document.querySelector(`.btn--roll`);
 const btnHold = document.querySelector(`.btn--hold`);
+const btnSpell = document.querySelector(`btn--spell`);
 const currScorePlayer0 = document.getElementById(`current--0`);
 const currScorePlayer1 = document.getElementById(`current--1`);
+const btnAbout = document.querySelector(`.about`);
+const modalAbout = document.querySelector(`.modal-about`);
+const overlay = document.querySelector(`.overlay`);
 
 // Boolean values for card effects
 let tsuruBool = false;
-let urashimaBool = false;
+let urashimaBool = [false, false];
 let omusubiBool = false;
 let sarukaniRevenge = -1; // This will keep track of if any player can take revenge. -1 means neither player, 0 is player 1, 1 is player 2.
 let issunBool = false;
@@ -75,6 +79,7 @@ const deck = [
     source: `08-1 Sanmai no Ofuda.png`,
     altSource: `08-2 Onibaba.png`,
     points: 15,
+    altPoints: -50,
     spell: true,
   },
   {
@@ -82,14 +87,15 @@ const deck = [
     source: `09 Kintarou.png`,
     altSource: null,
     points: 20,
-    spell: false,
+    spell: true,
   },
   {
     cardId: `bunbukuChagama`,
     source: `10-1 Bunbuku chagama.png`,
     altSource: `10-2 Bunbuku chagama.png`,
-    points: -15,
-    spell: true,
+    points: 25,
+    altPoints: 30,
+    spell: false,
   },
 ];
 
@@ -98,6 +104,13 @@ let altSrcCards = [];
 for (let card of deck) {
   if (card.altSource != null) {
     altSrcCards.push(card.cardId);
+  }
+}
+
+let cardsWithSpells = [];
+for (let card of deck) {
+  if (card.spell === true) {
+    cardsWithSpells.push(card.cardId);
   }
 }
 
@@ -181,45 +194,80 @@ function cardHandler(cardDrawn) {
     currentScore += 40;
     omusubiBool = false;
   }
+
+  // Cards with alternate versions are handled first, according to their conditiosn
   if (altSrcCards.includes(cardDrawn)) {
     // Bunbuku Chagama has 50% chance of showing one face or another
     if (cardDrawn === `bunbukuChagama`) {
       if (Math.random() < 0.5) {
         diceEle.src = deck[shufflerArray[deckIndex]].source;
+        currentScore += deck[shufflerArray[deckIndex]].points;
       } else {
         diceEle.src = deck[shufflerArray[deckIndex]].altSource;
+        currentScore += deck[shufflerArray[deckIndex]].altPoints;
       }
     }
     diceEle.src = deck[shufflerArray[deckIndex]].altSource; // TODO Fix later
-    // SaruKani
-    if (sarukaniRevenge === activePlayer) {
-      console.log(activePlayer + ` ` + sarukaniRevenge);
-      diceEle.src = deck[shufflerArray[deckIndex]].altSource;
-    } else {
-      diceEle.src = deck[shufflerArray[deckIndex]].source;
+
+    // Sanmai no Ofuda
+    if (cardDrawn === `sanmainoOfuda`) {
+      if (ofudaBool[activePlayer] === true) {
+        diceEle.src = deck[shufflerArray[deckIndex]].altSource;
+        currentScore += deck[shufflerArray[deckIndex]].altPoints;
+      } else {
+        diceEle.src = deck[shufflerArray[deckIndex]].source;
+        currentScore += deck[shufflerArray[deckIndex]].points;
+      }
+    }
+
+    // SaruKani - Players will take revenge if relevant
+    if (cardDrawn === `saruKani`) {
+      if (sarukaniRevenge === activePlayer) {
+        diceEle.src = deck[shufflerArray[deckIndex]].altSource;
+        currentScore += deck[shufflerArray[deckIndex]].points;
+      } else {
+        diceEle.src = deck[shufflerArray[deckIndex]].source;
+        currentScore += deck[shufflerArray[deckIndex]].points;
+      }
     }
   } else {
+    // Cards without alternate versions will simply be shown and had their standard point values added
     diceEle.src = deck[shufflerArray[deckIndex]].source;
+    currentScore += deck[shufflerArray[deckIndex]].points;
   }
 
   if (cardDrawn === `tengu`) {
     currentScore = 0;
-    // turn screen black
     document.querySelector("body").style.backgroundColor = `black`;
     endTurn();
     return;
+  }
+
+  if (cardDrawn === `omusubiKororin`) {
+    omusubiBool = true;
   }
 
   if (cardDrawn == `momotarou` && currentScore > 0) {
     currentScore *= 3;
   }
 
-  if (cardDrawn == `bunbukuChagama`) {
+  //   if (cardDrawn === `sanmainoOfuda`) { // --> This will be moved to spell
+  //     ofudaBool[activePlayer] = true;
+  //   }
+
+  if (cardDrawn === `tsurunoOngaeshi`) {
+    tsuruBool = true;
   }
+
   if (cardDrawn.spell) {
     // activate use spell button
   }
-  currentScore += deck[shufflerArray[deckIndex]].points;
+}
+
+function useSpell(cardDrawn) {
+  if (cardDrawn === `saruKani`) {
+    console.log(`saru kani spell`);
+  }
 }
 
 // Event Listeners
@@ -227,8 +275,12 @@ function cardHandler(cardDrawn) {
 // This will later be the draw card listener
 btnNew.addEventListener(`click`, function () {
   diceEle.classList.remove(`hidden`);
-  console.log(shufflerArray[deckIndex]);
   let cardDrawn = deck[shufflerArray[deckIndex]].cardId;
+  // if (cardsWithSpells.includes(cardDrawn)) {
+  //   btnSpell.disabled = false;
+  // } else {
+  //   btnSpell.disabled = true;
+  // }
   cardHandler(cardDrawn);
 
   document.getElementById(`current--${activePlayer}`).textContent =
@@ -252,7 +304,23 @@ btnRoll.addEventListener(`click`, function () {
 });
 
 // Hold to end turn
-
 btnHold.addEventListener(`click`, function () {
   endTurn();
 });
+
+btnSpell.addEventListener(`click`, function () {
+  useSpell(cardDrawn);
+});
+
+// TODO Under construction
+btnAbout.addEventListener(`click`, function () {
+  modalAbout.classList.remove(`hidden`);
+  overlay.classList.remove(`hidden`);
+});
+
+const closeModal = function () {
+  modalAbout.classList.add(`hidden`);
+  overlay.classList.add(`hidden`);
+};
+
+overlay.addEventListener(`click`, closeModal);
