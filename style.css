@@ -16,7 +16,8 @@ body {
   font-weight: 400;
   height: 100vh;
   color: #333;
-  background-image: linear-gradient(to top left, #70c319 0%, #045702 100%);
+  /* background-image: linear-gradient(to top left, #70c319 0%, #045702 100%); */
+  background: green;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,6 +147,7 @@ main {
 }
 
 .dice {
+  /* This class will be renamed to card later */
   position: absolute;
   left: 50%;
   top: 8.5rem;
@@ -153,6 +155,15 @@ main {
   height: 35rem;
   box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.2);
 }
+
+/* .dice {  // This will be the code I use later for programming dice rolls to see who goes first
+  position: absolute;
+  left: 50%;
+  top: 16.5rem;
+  transform: translateX(-50%);
+  height: 10rem;
+  box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.2);
+} */
 
 .player--winner {
   background-color: #2f2f2f;
