@@ -17,11 +17,11 @@ const overlay = document.querySelector(`.overlay`);
 
 // Boolean values for card effects
 let tsuruBool = false;
-let urashimaBool = [false, false];
+let ofudaBool = [false, false];
 let omusubiBool = false;
 let sarukaniRevenge = -1; // This will keep track of if any player can take revenge. -1 means neither player, 0 is player 1, 1 is player 2.
 let issunBool = false;
-let ofudaBool = false;
+let urashimaBool = false;
 let onibabaBool = false;
 let kintarouBool = false;
 
@@ -128,6 +128,19 @@ diceEle.classList.add(`hidden`);
 score1Ele.textContent = 0;
 score0Ele.textContent = 0;
 
+const drawCard = function () {
+  diceEle.classList.remove(`hidden`);
+  let cardDrawn = deck[shufflerArray[deckIndex]].cardId;
+  if (cardsWithSpells.includes(cardDrawn)) {
+    btnSpell.disabled = false;
+  } else {
+    btnSpell.disabled = true;
+  }
+  cardHandler(cardDrawn);
+
+  deckIndex = deckIndex === deck.length - 1 ? 0 : deckIndex + 1;
+};
+
 function endTurn() {
   // Player gets extra points if ended turn with tsuru no ongaesi
   if (tsuruBool) {
@@ -187,6 +200,7 @@ function newTurn() {
 }
 
 function cardHandler(cardDrawn) {
+  // Handling of any boolean effects that apply
   if (omusubiBool) {
     currentScore += 40;
     omusubiBool = false;
@@ -199,37 +213,38 @@ function cardHandler(cardDrawn) {
 
   // Cards with alternate versions are handled first, according to their conditiosn
   if (altSrcCards.includes(cardDrawn)) {
-    // Bunbuku Chagama has 50% chance of showing one face or another
-    if (cardDrawn === `bunbukuChagama`) {
-      if (Math.random() < 0.5) {
-        diceEle.src = deck[shufflerArray[deckIndex]].source;
-        currentScore += deck[shufflerArray[deckIndex]].points;
-      } else {
-        diceEle.src = deck[shufflerArray[deckIndex]].altSource;
-        currentScore += deck[shufflerArray[deckIndex]].altPoints;
+    switch (cardDrawn) {
+      // Bunbuku Chagama has 50% chance of showing one face or another
+      case `bunbukuChagama`: {
+        if (Math.random() < 0.5) {
+          diceEle.src = deck[shufflerArray[deckIndex]].source;
+          currentScore += deck[shufflerArray[deckIndex]].points;
+        } else {
+          diceEle.src = deck[shufflerArray[deckIndex]].altSource;
+          currentScore += deck[shufflerArray[deckIndex]].altPoints;
+        }
+        break;
       }
-    }
-    diceEle.src = deck[shufflerArray[deckIndex]].altSource; // TODO Fix later
 
-    // Sanmai no Ofuda
-    if (cardDrawn === `sanmainoOfuda`) {
-      if (ofudaBool[activePlayer] === true) {
-        diceEle.src = deck[shufflerArray[deckIndex]].altSource;
-        currentScore += deck[shufflerArray[deckIndex]].altPoints;
-      } else {
-        diceEle.src = deck[shufflerArray[deckIndex]].source;
-        currentScore += deck[shufflerArray[deckIndex]].points;
+      case `sanmainoOfuda`: {
+        if (ofudaBool[activePlayer] === true) {
+          diceEle.src = deck[shufflerArray[deckIndex]].altSource;
+          currentScore += deck[shufflerArray[deckIndex]].altPoints;
+        } else {
+          diceEle.src = deck[shufflerArray[deckIndex]].source;
+          currentScore += deck[shufflerArray[deckIndex]].points;
+        }
+        break;
       }
-    }
-
-    // SaruKani - Players will take revenge if relevant
-    if (cardDrawn === `saruKani`) {
-      if (sarukaniRevenge === activePlayer) {
-        diceEle.src = deck[shufflerArray[deckIndex]].altSource;
-        currentScore += deck[shufflerArray[deckIndex]].points;
-      } else {
-        diceEle.src = deck[shufflerArray[deckIndex]].source;
-        currentScore += deck[shufflerArray[deckIndex]].points;
+      // SaruKani - Players can take revenge if relevant
+      case `saruKani`: {
+        if (sarukaniRevenge === activePlayer) {
+          diceEle.src = deck[shufflerArray[deckIndex]].altSource;
+          currentScore += deck[shufflerArray[deckIndex]].points;
+        } else {
+          diceEle.src = deck[shufflerArray[deckIndex]].source;
+          currentScore += deck[shufflerArray[deckIndex]].points;
+        }
       }
     }
   } else {
@@ -238,29 +253,46 @@ function cardHandler(cardDrawn) {
     currentScore += deck[shufflerArray[deckIndex]].points;
   }
 
-  if (cardDrawn === `tengu`) {
-    currentScore = 0;
-    document.querySelector("body").style.backgroundColor = `black`;
-    endTurn();
-    return;
+  // Handle any special effects of cards
+  switch (cardDrawn) {
+    case `tengu`: {
+      // give player opportunity to use ofuda if available
+      if (ofudaBool[activePlayer]) {
+        // ask player if they want to use their ofuda
+        console.log(`do you want to use your ofuda`);
+      }
+      currentScore = 0;
+      document.querySelector("body").style.backgroundColor = `black`;
+      endTurn();
+      return;
+    }
+
+    case `omusubiKororin`: {
+      omusubiBool = true;
+      break;
+    }
+
+    case `momotarou`: {
+      if (currentScore > 0) {
+        currentScore *= 3;
+      } else {
+        currentScore = 0;
+      }
+      break;
+    }
+
+    case `issunboushi`: {
+      currentScore = Math.trunc(currentScore / 2);
+      issunBool = true;
+      break;
+    }
+
+    case `tsurunoOngaeshi`: {
+      tsuruBool = true;
+      break;
+    }
   }
 
-  if (cardDrawn === `omusubiKororin`) {
-    omusubiBool = true;
-  }
-
-  if (cardDrawn == `momotarou` && currentScore > 0) {
-    currentScore *= 3;
-  }
-
-  if (cardDrawn === `issunboushi`) {
-    currentScore = Math.trunc(currentScore / 2);
-    issunBool = true;
-  }
-
-  if (cardDrawn === `tsurunoOngaeshi`) {
-    tsuruBool = true;
-  }
   // Update the current score
   document.getElementById(`current--${activePlayer}`).textContent =
     currentScore;
@@ -268,48 +300,58 @@ function cardHandler(cardDrawn) {
 
 function useSpell() {
   let cardDrawn = deck[shufflerArray[deckIndex - 1]].cardId;
+  let opponent = activePlayer === 1 ? 0 : 1;
 
-  //SaruKani Spells
-  if (cardDrawn === `saruKani` && !sarukaniRevenge == activePlayer) {
-    let opponent = activePlayer === 1 ? 0 : 1;
-    totalScores[opponent] -= 100;
-    currentScore += 100;
-    document.getElementById(`current--${activePlayer}`).textContent =
-      currentScore;
-    document.getElementById(`score--${opponent}`).textContent =
-      totalScores[activePlayer];
-    sarukaniRevenge = opponent;
-  } else if (cardDrawn === `saruKani` && sarukaniRevenge == opponent) {
-    let opponent = activePlayer === 1 ? 0 : 1;
-    totalScores[opponent] -= 250;
-    document.getElementById(`score--${opponent}`).textContent =
-      totalScores[activePlayer];
-    sarukaniRevenge = -1; // deactivate
-  }
+  switch (cardDrawn) {
+    case `saruKani`: {
+      if (!sarukaniRevenge == activePlayer) {
+        totalScores[opponent] -= 100;
+        currentScore += 100;
+        document.getElementById(`current--${activePlayer}`).textContent =
+          currentScore;
+        document.getElementById(`score--${opponent}`).textContent =
+          totalScores[opponent];
+        sarukaniRevenge = opponent;
+      } else if (sarukaniRevenge == activePlayer) {
+        totalScores[opponent] -= 250;
+        document.getElementById(`score--${opponent}`).textContent =
+          totalScores[activePlayer];
+        sarukaniRevenge = -1; // deactivate revenge
+      }
+      break;
+    }
 
-  //Sanmai no Ofuda Spell
-  if (cardDrawn === `sanmainoOfuda` && !onibabaBool) {
-    onibabaBool = true;
-    ofudaBool = true;
-    // Show some fuda graphic element on that player's thing
+    case `sanmainoOfuda`: {
+      if (!onibabaBool) {
+        onibabaBool = true;
+        ofudaBool = true;
+        // Show some fuda graphic element on that player's thing
+      }
+      break;
+    }
+
+    case `kintarou`: {
+      deckIndex++;
+      drawCard();
+      break;
+    }
   }
 }
+
+const rollDice = function () {
+  // 1. Generate roll, add score
+  const diceVal = Math.trunc(Math.random() * 6) + 1;
+  console.log(diceVal);
+
+  // 2. Display die
+  diceEle.classList.remove(`hidden`);
+  diceEle.src = `dice-${diceVal}.png`;
+};
 
 // Event Listeners
 
 // This will later be the draw card listener
-btnNew.addEventListener(`click`, function () {
-  diceEle.classList.remove(`hidden`);
-  let cardDrawn = deck[shufflerArray[deckIndex]].cardId;
-  if (cardsWithSpells.includes(cardDrawn)) {
-    btnSpell.disabled = false;
-  } else {
-    btnSpell.disabled = true;
-  }
-  cardHandler(cardDrawn);
-
-  deckIndex = deckIndex === deck.length - 1 ? 0 : deckIndex + 1;
-});
+btnNew.addEventListener(`click`, drawCard);
 
 // Roll the die
 btnRoll.addEventListener(`click`, function () {
