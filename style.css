@@ -130,7 +130,7 @@ main {
 .btn--new {
   top: 8rem;
 }
-.btn--roll {
+.btn--draw {
   top: 45rem;
 }
 .btn--hold {
@@ -138,6 +138,9 @@ main {
 }
 .btn--spell {
   top: 2rem;
+}
+.btn--log {
+  bottom: 5rem;
 }
 
 .btn:active {
@@ -180,7 +183,7 @@ main {
 
 .player--winner .name {
   font-weight: 700;
-  color: #c7365f;
+  color: #ffffff;
 }
 
 .hidden {
@@ -229,4 +232,14 @@ main {
   cursor: pointer;
   border: none;
   background: none;
+}
+
+.log {
+  resize: none;
+  background-color: black;
+  color: white;
+  position: absolute;
+  left: 10rem;
+  height: 60rem;
+  width: 30rem;
 }

@@ -1,19 +1,29 @@
 `use strict`;
 
+// Later I will put this code block into the new game button event
+window.onload = function () {
+  diceEle.classList.remove(`hidden`);
+  newTurn();
+};
+
 // Selecting elements
+const player0Ele = document.querySelector(`.player--0`);
+const player1Ele = document.querySelector(`.player--1`);
 const score0Ele = document.getElementById(`score--0`);
 const score1Ele = document.getElementById(`score--1`);
 const diceEle = document.querySelector(`.dice`);
 const cardEle = document.querySelector(`.card`);
 const btnNew = document.querySelector(`.btn--new`);
-const btnRoll = document.querySelector(`.btn--roll`);
+const btnDraw = document.querySelector(`.btn--draw`);
 const btnHold = document.querySelector(`.btn--hold`);
 const btnSpell = document.querySelector(`.btn--spell`);
+const btnLog = document.querySelector(`.btn--log`);
 const currScorePlayer0 = document.getElementById(`current--0`);
 const currScorePlayer1 = document.getElementById(`current--1`);
 const btnAbout = document.querySelector(`.about`);
 const modalAbout = document.querySelector(`.modal-about`);
 const overlay = document.querySelector(`.overlay`);
+const gameLog = document.querySelector(`.log`);
 
 // Boolean values for card effects
 let tsuruBool = false;
@@ -25,6 +35,7 @@ let urashimaCounter = 0;
 let onibabaBool = false;
 let kintarouBool = false;
 
+// Deck of card objects
 const deck = [
   {
     cardId: `saruKani`,
@@ -94,20 +105,21 @@ const deck = [
     cardId: `bunbukuChagama`,
     source: `10-1 Bunbuku chagama.png`,
     altSource: `10-2 Bunbuku chagama.png`,
-    points: 25,
+    points: -25,
     altPoints: 30,
     spell: false,
   },
 ];
 
+// This array holds any cards who have different versions depending on the conditions
 let altSrcCards = [];
-
 for (let card of deck) {
   if (card.altSource != null) {
     altSrcCards.push(card.cardId);
   }
 }
 
+// This array holds cards that have usable spell effects
 let cardsWithSpells = [];
 for (let card of deck) {
   if (card.spell === true) {
@@ -121,12 +133,17 @@ let deckIndex = 0;
 let currentScore = 0;
 let activePlayer = 0;
 const totalScores = [0, 0];
+const winningScore = 1000;
 
 diceEle.classList.add(`hidden`);
 score1Ele.textContent = 0;
 score0Ele.textContent = 0;
 
 const drawCard = function () {
+  // If someone draws a card, they no longer get the Tsuru no Ongaeshi bonus
+  if (tsuruBool) {
+    tsuruBool = false;
+  }
   diceEle.classList.remove(`hidden`);
   btnSpell.classList.remove(`hidden`);
   let cardDrawn = deck[shufflerArray[deckIndex]].cardId;
@@ -135,7 +152,7 @@ const drawCard = function () {
     btnSpell.textContent = `🔮 Use Spell`;
   } else {
     btnSpell.disabled = true;
-    btnSpell.textContent = `❌ No spell`;
+    btnSpell.textContent = `🈚 No spell`;
   }
   cardHandler(cardDrawn);
 
@@ -157,6 +174,7 @@ function endTurn() {
   btnHold.disabled = false;
   btnHold.textContent = `⏹️ Hold`;
 
+  // Add any points gained/lost to total and update GUI
   totalScores[activePlayer] += currentScore;
   document.getElementById(`score--${activePlayer}`).textContent =
     totalScores[activePlayer];
@@ -164,8 +182,23 @@ function endTurn() {
   document.getElementById(`current--${activePlayer}`).textContent =
     currentScore;
 
-  // switch player
+  // End game condition. Experimental TODO
+  if (totalScores[activePlayer] >= winningScore) {
+    document
+      .querySelector(`.player--${activePlayer}`)
+      .classList.add(`player--winner`);
+    document
+      .querySelector(`.player--${activePlayer}`)
+      .classList.remove(`player--active`);
+    btnHold.classList.add(`hidden`);
+    btnSpell.classList.add(`hidden`);
+    btnDraw.classList.add(`hidden`);
+  }
+
+  // Switch player
   activePlayer = activePlayer === 0 ? 1 : 0;
+  player0Ele.classList.toggle(`player--active`);
+  player1Ele.classList.toggle(`player--active`);
   newTurn(); // this is sitting here now but will be moved once it has its own button
 }
 
@@ -323,6 +356,9 @@ function useSpell() {
   let cardDrawn = deck[shufflerArray[deckIndex - 1]].cardId;
   let opponent = activePlayer === 1 ? 0 : 1;
 
+  btnSpell.disabled = true;
+  btnSpell.textContent = `☑️ Spell used`;
+
   switch (cardDrawn) {
     case `saruKani`: {
       if (!sarukaniRevenge == activePlayer) {
@@ -375,19 +411,7 @@ const rollDice = function () {
 btnNew.addEventListener(`click`, drawCard);
 
 // Roll the die
-btnRoll.addEventListener(`click`, function () {
-  // 1. Generate roll, add score
-  const diceVal = Math.trunc(Math.random() * 6) + 1;
-  console.log(diceVal);
-
-  // 2. Display dice/card
-  diceEle.classList.remove(`hidden`);
-  diceEle.src = `dice-${diceVal}.png`;
-
-  // 3. Check for event
-
-  deckIndex++;
-});
+btnDraw.addEventListener(`click`, drawCard);
 
 // Hold to end turn
 btnHold.addEventListener(`click`, function () {
@@ -410,3 +434,12 @@ const closeModal = function () {
 };
 
 overlay.addEventListener(`click`, closeModal);
+
+btnLog.addEventListener(`click`, function () {
+  gameLog.classList.toggle(`hidden`);
+  if (gameLog.classList.contains(`hidden`)) {
+    btnLog.textContent = `📜 Show Log`;
+  } else {
+    btnLog.textContent = `📜 Hide Log`;
+  }
+});
