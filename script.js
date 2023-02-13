@@ -21,7 +21,7 @@ let ofudaBool = [false, false];
 let omusubiBool = false;
 let sarukaniRevenge = -1; // This will keep track of if any player can take revenge. -1 means neither player, 0 is player 1, 1 is player 2.
 let issunBool = false;
-let urashimaBool = false;
+let urashimaCounter = 0;
 let onibabaBool = false;
 let kintarouBool = false;
 
@@ -119,8 +119,6 @@ for (let card of deck) {
 let shufflerArray = [...Array(deck.length).keys()]; // Creates an array with ascending integer values starting at 0
 let deckIndex = 0;
 let currentScore = 0;
-let player1Score = 0;
-let player2Score = 0;
 let activePlayer = 0;
 const totalScores = [0, 0];
 
@@ -130,11 +128,14 @@ score0Ele.textContent = 0;
 
 const drawCard = function () {
   diceEle.classList.remove(`hidden`);
+  btnSpell.classList.remove(`hidden`);
   let cardDrawn = deck[shufflerArray[deckIndex]].cardId;
   if (cardsWithSpells.includes(cardDrawn)) {
     btnSpell.disabled = false;
+    btnSpell.textContent = `🔮 Use Spell`;
   } else {
     btnSpell.disabled = true;
+    btnSpell.textContent = `❌ No spell`;
   }
   cardHandler(cardDrawn);
 
@@ -151,6 +152,10 @@ function endTurn() {
   // Turn off any boolean values that are no longer relevant
   omusubiBool = false;
   issunBool = false;
+  urashimaCounter = 0;
+  // Re-enable hold button if Urashima effect had disabled it
+  btnHold.disabled = false;
+  btnHold.textContent = `⏹️ Hold`;
 
   totalScores[activePlayer] += currentScore;
   document.getElementById(`score--${activePlayer}`).textContent =
@@ -209,6 +214,17 @@ function cardHandler(cardDrawn) {
   if (issunBool) {
     currentScore *= 4;
     issunBool = false;
+  }
+
+  if (urashimaCounter > 0) {
+    urashimaCounter--;
+    btnHold.disabled = true;
+    btnHold.textContent = `❌ Cannot hold`;
+    if (urashimaCounter === 0) {
+      btnHold.disabled = false;
+      btnHold.textContent = `⏹️ Hold`;
+      currentScore += 100; // TODO Urashima score decide exact value for bonus later
+    }
   }
 
   // Cards with alternate versions are handled first, according to their conditiosn
@@ -291,6 +307,11 @@ function cardHandler(cardDrawn) {
       tsuruBool = true;
       break;
     }
+
+    case `urashimaTarou`: {
+      urashimaCounter = 3;
+      break;
+    }
   }
 
   // Update the current score
@@ -331,7 +352,7 @@ function useSpell() {
     }
 
     case `kintarou`: {
-      deckIndex++;
+      deckIndex = deckIndex === deck.length - 1 ? 0 : deckIndex + 1;
       drawCard();
       break;
     }
