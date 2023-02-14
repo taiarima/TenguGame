@@ -2,7 +2,9 @@
 
 // Later I will put this code block into the new game button event
 window.onload = function () {
-  diceEle.classList.remove(`hidden`);
+  cardEle.classList.remove(`hidden`);
+  btnDraw.classList.remove(`hidden`);
+  btnHold.classList.remove(`hidden`);
   newTurn();
 };
 
@@ -11,7 +13,6 @@ const player0Ele = document.querySelector(`.player--0`);
 const player1Ele = document.querySelector(`.player--1`);
 const score0Ele = document.getElementById(`score--0`);
 const score1Ele = document.getElementById(`score--1`);
-const diceEle = document.querySelector(`.dice`);
 const cardEle = document.querySelector(`.card`);
 const btnNew = document.querySelector(`.btn--new`);
 const btnDraw = document.querySelector(`.btn--draw`);
@@ -43,6 +44,7 @@ const deck = [
     altSource: `01-2 Monkey-Crab Quarrel Crab Revenge.png`,
     points: 15,
     spell: true,
+    cardText: `Monkey-Crab Quarrel`,
   },
   {
     cardId: `momotarou`,
@@ -50,6 +52,7 @@ const deck = [
     altSource: null,
     points: 10,
     spell: false,
+    cardText: `Momotarou`,
   },
   {
     cardId: `issunboushi`,
@@ -57,6 +60,7 @@ const deck = [
     altSource: null,
     points: 20,
     spell: false,
+    cardText: `Issunboushi`,
   },
   {
     cardId: `tengu`,
@@ -64,6 +68,7 @@ const deck = [
     altSource: null,
     points: 0,
     spell: false,
+    cardText: `TENGU`,
   },
   {
     cardId: `urashimaTarou`,
@@ -71,6 +76,7 @@ const deck = [
     altSource: null,
     points: 15,
     spell: false,
+    cardText: `Urashima Tarou`,
   },
   {
     cardId: `tsurunoOngaeshi`,
@@ -78,6 +84,7 @@ const deck = [
     altSource: null,
     points: 15,
     spell: false,
+    cardText: `Tsuru no Ongaeshi`,
   },
   {
     cardId: `omusubiKororin`,
@@ -85,6 +92,7 @@ const deck = [
     altSource: null,
     points: 15,
     spell: false,
+    cardText: `Omusubi Kororin`,
   },
   {
     cardId: `sanmainoOfuda`,
@@ -93,6 +101,7 @@ const deck = [
     points: 15,
     altPoints: -50,
     spell: true,
+    cardText: `Sanmai no Ofuda`,
   },
   {
     cardId: `kintarou`,
@@ -100,6 +109,7 @@ const deck = [
     altSource: null,
     points: 20,
     spell: true,
+    cardText: `Kintarou`,
   },
   {
     cardId: `bunbukuChagama`,
@@ -108,6 +118,15 @@ const deck = [
     points: -25,
     altPoints: 30,
     spell: false,
+    cardText: `Bunbuku Chagama`,
+  },
+  {
+    cardId: `kasaJizou`,
+    source: `11 Kasa Jizou.png`,
+    altSource: `null`,
+    points: 5,
+    spell: true,
+    cardText: `Kasa Jizou`,
   },
 ];
 
@@ -134,8 +153,13 @@ let currentScore = 0;
 let activePlayer = 0;
 const totalScores = [0, 0];
 const winningScore = 1000;
+let playerNames = [];
+let player1Name = `Player 1`;
+let player2Name = `Player 2`;
+playerNames.push(player1Name);
+playerNames.push(player2Name);
 
-diceEle.classList.add(`hidden`);
+cardEle.classList.add(`hidden`);
 score1Ele.textContent = 0;
 score0Ele.textContent = 0;
 
@@ -144,8 +168,12 @@ const drawCard = function () {
   if (tsuruBool) {
     tsuruBool = false;
   }
-  diceEle.classList.remove(`hidden`);
+
+  cardEle.classList.remove(`hidden`);
   btnSpell.classList.remove(`hidden`);
+  let cardText = deck[shufflerArray[deckIndex]].cardText;
+  gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText}! \n`;
+  gameLog.scrollTop = gameLog.scrollHeight;
   let cardDrawn = deck[shufflerArray[deckIndex]].cardId;
   if (cardsWithSpells.includes(cardDrawn)) {
     btnSpell.disabled = false;
@@ -203,7 +231,7 @@ function endTurn() {
 }
 
 function newTurn() {
-  document.querySelector("body").style.backgroundColor = `green`;
+  document.querySelector("body").style.backgroundColor = `#242624`;
   //Shuffle the deck
   shufflerArray = [...Array(deck.length).keys()]; // Creates an array with values 0-9
   let currentIndex = shufflerArray.length;
@@ -234,7 +262,7 @@ function newTurn() {
   deckIndex = 0;
 
   // Show card back at new turn
-  diceEle.src = `cardBack.png`;
+  cardEle.src = `cardBack.png`;
 }
 
 function cardHandler(cardDrawn) {
@@ -266,10 +294,10 @@ function cardHandler(cardDrawn) {
       // Bunbuku Chagama has 50% chance of showing one face or another
       case `bunbukuChagama`: {
         if (Math.random() < 0.5) {
-          diceEle.src = deck[shufflerArray[deckIndex]].source;
+          cardEle.src = deck[shufflerArray[deckIndex]].source;
           currentScore += deck[shufflerArray[deckIndex]].points;
         } else {
-          diceEle.src = deck[shufflerArray[deckIndex]].altSource;
+          cardEle.src = deck[shufflerArray[deckIndex]].altSource;
           currentScore += deck[shufflerArray[deckIndex]].altPoints;
         }
         break;
@@ -277,10 +305,10 @@ function cardHandler(cardDrawn) {
 
       case `sanmainoOfuda`: {
         if (ofudaBool[activePlayer] === true) {
-          diceEle.src = deck[shufflerArray[deckIndex]].altSource;
+          cardEle.src = deck[shufflerArray[deckIndex]].altSource;
           currentScore += deck[shufflerArray[deckIndex]].altPoints;
         } else {
-          diceEle.src = deck[shufflerArray[deckIndex]].source;
+          cardEle.src = deck[shufflerArray[deckIndex]].source;
           currentScore += deck[shufflerArray[deckIndex]].points;
         }
         break;
@@ -288,17 +316,17 @@ function cardHandler(cardDrawn) {
       // SaruKani - Players can take revenge if relevant
       case `saruKani`: {
         if (sarukaniRevenge === activePlayer) {
-          diceEle.src = deck[shufflerArray[deckIndex]].altSource;
+          cardEle.src = deck[shufflerArray[deckIndex]].altSource;
           currentScore += deck[shufflerArray[deckIndex]].points;
         } else {
-          diceEle.src = deck[shufflerArray[deckIndex]].source;
+          cardEle.src = deck[shufflerArray[deckIndex]].source;
           currentScore += deck[shufflerArray[deckIndex]].points;
         }
       }
     }
   } else {
     // Cards without alternate versions will simply be shown and had their standard point values added
-    diceEle.src = deck[shufflerArray[deckIndex]].source;
+    cardEle.src = deck[shufflerArray[deckIndex]].source;
     currentScore += deck[shufflerArray[deckIndex]].points;
   }
 
@@ -395,15 +423,15 @@ function useSpell() {
   }
 }
 
-const rollDice = function () {
-  // 1. Generate roll, add score
-  const diceVal = Math.trunc(Math.random() * 6) + 1;
-  console.log(diceVal);
+// const rollDice = function () {
+//   // 1. Generate roll, add score
+//   const diceVal = Math.trunc(Math.random() * 6) + 1;
+//   console.log(diceVal);
 
-  // 2. Display die
-  diceEle.classList.remove(`hidden`);
-  diceEle.src = `dice-${diceVal}.png`;
-};
+//   // 2. Display die
+//   diceEle.classList.remove(`hidden`);
+//   diceEle.src = `dice-${diceVal}.png`;
+// };
 
 // Event Listeners
 

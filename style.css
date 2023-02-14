@@ -17,7 +17,7 @@ body {
   height: 100vh;
   color: #333;
   /* background-image: linear-gradient(to top left, #70c319 0%, #045702 100%); */
-  background: green;
+  background: #242624;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,6 +128,7 @@ main {
 }
 
 .btn--new {
+  left: 28%;
   top: 8rem;
 }
 .btn--draw {
@@ -158,7 +159,7 @@ main {
   outline: none;
 }
 
-.dice {
+.card {
   /* This class will be renamed to card later */
   position: absolute;
   left: 50%;
@@ -242,4 +243,11 @@ main {
   left: 10rem;
   height: 60rem;
   width: 30rem;
+  font-size: 14pt;
+}
+
+.tengu-img {
+  position: absolute;
+  height: 10rem;
+  top: 2rem;
 }
