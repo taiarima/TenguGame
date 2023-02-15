@@ -128,12 +128,15 @@ main {
 }
 
 .btn--new {
-  top: 8rem;
+  top: 2rem;
 }
 .btn--draw {
   top: 45rem;
 }
 .btn--hold {
+  top: 52rem;
+}
+.btn--turn {
   top: 52rem;
 }
 .btn--spell {

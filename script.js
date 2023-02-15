@@ -13,10 +13,11 @@ const btnNew = document.querySelector(`.btn--new`);
 const btnDraw = document.querySelector(`.btn--draw`);
 const btnHold = document.querySelector(`.btn--hold`);
 const btnSpell = document.querySelector(`.btn--spell`);
+const btnTurn = document.querySelector(`.btn--turn`);
 const btnLog = document.querySelector(`.btn--log`);
 const currScorePlayer0 = document.getElementById(`current--0`);
 const currScorePlayer1 = document.getElementById(`current--1`);
-const btnAbout = document.querySelector(`.about`);
+const btnAbout = document.querySelector(`.about`); // this isn't a button so it should be renamed
 const modalAbout = document.querySelector(`.modal-about`);
 const overlay = document.querySelector(`.overlay`);
 const gameLog = document.querySelector(`.log`);
@@ -195,12 +196,19 @@ score1Ele.textContent = 0;
 score0Ele.textContent = 0;
 
 const newGame = function () {
-  cardEle.classList.remove(`hidden`);
-  btnDraw.classList.remove(`hidden`);
-  btnHold.classList.remove(`hidden`);
-  // btnSpell.classList.remove(`hidden`);
-  btnLog.classList.remove(`hidden`);
-  btnNew.classList.add(`hidden`);
+  btnLog.classList.toggle(`hidden`);
+  btnNew.classList.toggle(`hidden`);
+  btnTurn.classList.toggle(`hidden`); // this is silly but it should work for now
+  btnSpell.classList.toggle(`hidden`);
+  document
+    .querySelector(`.player--${activePlayer}`)
+    .classList.remove(`player--winner`);
+  document.querySelector(`.player--0`).classList.add(`player--active`); // change this later
+  activePlayer = 0;
+
+  // Set scores back to zero
+  score0Ele.textContent = 0;
+  score1Ele.textContent = 0;
   newTurn();
 };
 
@@ -259,7 +267,7 @@ function endTurn() {
     currentScore;
 
   // End game condition. Experimental TODO
-  if (totalScores[activePlayer] >= winningScore) {
+  if (totalScores[activePlayer] >= winningScore - 999) {
     document
       .querySelector(`.player--${activePlayer}`)
       .classList.add(`player--winner`);
@@ -269,16 +277,35 @@ function endTurn() {
     btnHold.classList.add(`hidden`);
     btnSpell.classList.add(`hidden`);
     btnDraw.classList.add(`hidden`);
+    btnNew.classList.toggle(`hidden`);
+    return;
   }
 
   // Switch player
   activePlayer = activePlayer === 0 ? 1 : 0;
   player0Ele.classList.toggle(`player--active`);
   player1Ele.classList.toggle(`player--active`);
-  newTurn(); // this is sitting here now but will be moved once it has its own button
+
+  // Hide all buttons
+  btnDraw.classList.toggle(`hidden`);
+  btnSpell.classList.toggle(`hidden`);
+  btnHold.classList.toggle(`hidden`);
+
+  // Show new turn button
+  btnTurn.classList.toggle(`hidden`);
+
+  //newTurn(); // this is sitting here now but will be moved once it has its own button
 }
 
 function newTurn() {
+  // Reveal all buttons
+  btnDraw.classList.toggle(`hidden`);
+  btnSpell.classList.toggle(`hidden`);
+  btnHold.classList.toggle(`hidden`);
+
+  // Hide new turn button
+  btnTurn.classList.toggle(`hidden`);
+
   btnHold.disabled = true;
   document.querySelector("body").style.backgroundColor = `#242624`;
   //Shuffle the deck
@@ -302,7 +329,7 @@ function newTurn() {
   for (let i = 0; i < shufflerArray.length; i++) {
     console.log(`shufflerArray[${i}] = ` + shufflerArray[i]);
   }
-//   shufflerArray[0] = 3;
+  //   shufflerArray[0] = 3;
   let newTenguIndex = Math.trunc(Math.random() * (deck.length - 1)) + 1; // Get a new random index from 1 to deck.length -1
   // Prevent Tengu from being first card
   if (deck[shufflerArray[0]].cardId === `tengu`) {
@@ -316,6 +343,7 @@ function newTurn() {
   deckIndex = 0;
 
   // Show card back at new turn
+  cardEle.classList.remove(`hidden`);
   cardEle.src = `cardBack.png`;
 
   // Kasajizou Spell effect, maybe change later TODO
@@ -400,7 +428,7 @@ function cardHandler(cardDrawn) {
         console.log(`do you want to use your ofuda`);
       }
       currentScore = 0;
-      document.querySelector("body").style.backgroundColor = `black`;
+      document.querySelector("body").style.backgroundColor = `crimson`;
       endTurn();
       return;
     }
@@ -533,6 +561,10 @@ btnHold.addEventListener(`click`, function () {
 
 btnSpell.addEventListener(`click`, function () {
   useSpell();
+});
+
+btnTurn.addEventListener(`click`, function () {
+  newTurn();
 });
 
 // TODO Under construction
