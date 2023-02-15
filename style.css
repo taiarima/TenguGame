@@ -254,3 +254,9 @@ main {
   height: 10rem;
   top: 2rem;
 }
+
+.round-msg {
+  height: 10rem;
+  font-size: 2rem;
+  color: white;
+}

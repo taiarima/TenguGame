@@ -18,6 +18,8 @@ const btnAbout = document.querySelector(`.about`); // this isn't a button so it 
 const modalAbout = document.querySelector(`.modal-about`);
 const overlay = document.querySelector(`.overlay`);
 const gameLog = document.querySelector(`.log`);
+const roundMsg0 = document.getElementById(`msg--0`);
+const roundMsg1 = document.getElementById(`msg--1`);
 
 // Variables for card effects
 let tsuruBool = false;
@@ -210,6 +212,11 @@ const newGame = function () {
   // Set scores back to zero
   score0Ele.textContent = 0;
   score1Ele.textContent = 0;
+  totalScores[0] = 0;
+  totalScores[1] = 0;
+
+  // Clear log
+  gameLog.value = ``;
   newTurn();
 };
 
@@ -260,6 +267,15 @@ function endTurn() {
   btnHold.textContent = `⏹️ Hold`;
 
   // Add any points gained/lost to total and update GUI
+  document.getElementById(`msg--${activePlayer}`).classList.remove(`hidden`);
+  document.getElementById(`msg--${activePlayer}`).textContent = `${
+    currentScore >= 0 ? `+` : `-`
+  }${currentScore} points this round!`;
+  gameLog.value += `${playerNames[activePlayer]} earned ${
+    currentScore >= 0 ? `+` : `-`
+  }${currentScore} points this round!`;
+  gameLog.scrollTop = gameLog.scrollHeight;
+
   totalScores[activePlayer] += currentScore;
   document.getElementById(`score--${activePlayer}`).textContent =
     totalScores[activePlayer];
@@ -268,7 +284,7 @@ function endTurn() {
     currentScore;
 
   // End game condition. Experimental TODO
-  if (totalScores[activePlayer] >= winningScore - 999) {
+  if (totalScores[activePlayer] >= winningScore) {
     document
       .querySelector(`.player--${activePlayer}`)
       .classList.add(`player--winner`);
@@ -299,6 +315,8 @@ function endTurn() {
 }
 
 function newTurn() {
+  gameLog.value += `\n >>> Begin ${playerNames[activePlayer]}'s turn!! >>>> \n`;
+  gameLog.scrollTop = gameLog.scrollHeight;
   // Reveal all buttons
   btnDraw.classList.toggle(`hidden`);
   btnSpell.classList.toggle(`hidden`);
@@ -306,6 +324,9 @@ function newTurn() {
 
   // Hide new turn button
   btnTurn.classList.toggle(`hidden`);
+
+  roundMsg0.classList.add(`hidden`);
+  roundMsg1.classList.add(`hidden`);
 
   btnHold.disabled = true;
   document.querySelector("body").style.backgroundColor = `#242624`;
@@ -436,8 +457,8 @@ function cardHandler(cardDrawn) {
       }
       currentScore = 0;
       document.querySelector("body").style.backgroundColor = `crimson`;
-      endTurn();
-      return;
+      suppString = `Your turn is over! \n`;
+      return suppString;
     }
 
     case `omusubiKororin`: {
@@ -550,17 +571,19 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
     case `sanmainoOfuda`: {
       if (fudaAltTextBool) {
         // something
+        gameLog.scrollTop = gameLog.scrollHeight;
       } else {
         // something else
+        gameLog.scrollTop = gameLog.scrollHeight;
       }
       break;
     }
     case `bunbukuChagama`: {
-      if (bunbukuAltTextBool) {
+      if (!bunbukuAltTextBool) {
         // this is mixed up right now
         gameLog.value += `${
           playerNames[activePlayer]
-        } has drawn ${cardText} and had to pay ${30}! ${suppString} \n`;
+        } has drawn ${cardText} and had to pay ${30} points!${suppString} \n`;
         gameLog.scrollTop = gameLog.scrollHeight;
       } else {
         gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText} and earned +${points}! ${suppString} \n`;
@@ -577,8 +600,16 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
       gameLog.scrollTop = gameLog.scrollHeight;
       break;
     }
+    case `tengu`: {
+      gameLog.value +=
+        `${playerNames[activePlayer]} has drawn TENGU! You earn zero points this round! ` +
+        suppString;
+      gameLog.scrollTop = gameLog.scrollHeight;
+      endTurn(); // this is a weird place for this but it works
+      break;
+    }
     default: {
-      gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText} and earned +${points} points! ${suppString} \n`;
+      gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText} and earned ${points} points! ${suppString} \n`;
       gameLog.scrollTop = gameLog.scrollHeight;
     }
   }
