@@ -1,12 +1,7 @@
 `use strict`;
 
 // Later I will put this code block into the new game button event
-window.onload = function () {
-  cardEle.classList.remove(`hidden`);
-  btnDraw.classList.remove(`hidden`);
-  btnHold.classList.remove(`hidden`);
-  newTurn();
-};
+window.onload = function () {};
 
 // Selecting elements
 const player0Ele = document.querySelector(`.player--0`);
@@ -26,15 +21,19 @@ const modalAbout = document.querySelector(`.modal-about`);
 const overlay = document.querySelector(`.overlay`);
 const gameLog = document.querySelector(`.log`);
 
-// Boolean values for card effects
+// Variables for card effects
 let tsuruBool = false;
 let ofudaBool = [false, false];
+let onibabaBool = [false, false];
 let omusubiBool = false;
 let sarukaniRevenge = -1; // This will keep track of if any player can take revenge. -1 means neither player, 0 is player 1, 1 is player 2.
 let issunBool = false;
 let urashimaCounter = 0;
-let onibabaBool = false;
+let warashibeCounter = [1, 1];
 let kintarouBool = false;
+let kasajizouBool = [false, false];
+let kaniRevengeTracker = [0, 0];
+const monkeyAttackPts = 100;
 
 // Deck of card objects
 const deck = [
@@ -123,10 +122,42 @@ const deck = [
   {
     cardId: `kasaJizou`,
     source: `11 Kasa Jizou.png`,
-    altSource: `null`,
+    altSource: null,
     points: 5,
     spell: true,
     cardText: `Kasa Jizou`,
+  },
+  {
+    cardId: `warashibe`,
+    source: `12 Warashibe Tyouja.png`,
+    altSource: null,
+    points: 15,
+    spell: false,
+    cardText: `Warashibe Chouja`,
+  },
+  {
+    cardId: `kamotori`,
+    source: `13  kamotori gonbei.png`,
+    altSource: null,
+    points: 15,
+    spell: true, // TODO haven't coded in spell yet
+    cardText: `Kamo-tori Gonbei`,
+  },
+  {
+    cardId: `ikkyuu`,
+    source: `14 ikkyuusan.png`,
+    altSource: null,
+    points: 25,
+    spell: true, // TODO haven't coded in spell yet
+    cardText: `Ikkyuu-san`,
+  },
+  {
+    cardId: `kobutori`,
+    source: `15 kobutori jiisan.png`,
+    altSource: null,
+    points: 25,
+    spell: true, // TODO haven't coded in spell yet
+    cardText: `Kobu-tori Jiisan`,
   },
 ];
 
@@ -163,7 +194,18 @@ cardEle.classList.add(`hidden`);
 score1Ele.textContent = 0;
 score0Ele.textContent = 0;
 
+const newGame = function () {
+  cardEle.classList.remove(`hidden`);
+  btnDraw.classList.remove(`hidden`);
+  btnHold.classList.remove(`hidden`);
+  // btnSpell.classList.remove(`hidden`);
+  btnLog.classList.remove(`hidden`);
+  btnNew.classList.add(`hidden`);
+  newTurn();
+};
+
 const drawCard = function () {
+  btnHold.disabled = false;
   // If someone draws a card, they no longer get the Tsuru no Ongaeshi bonus
   if (tsuruBool) {
     tsuruBool = false;
@@ -171,6 +213,12 @@ const drawCard = function () {
 
   cardEle.classList.remove(`hidden`);
   btnSpell.classList.remove(`hidden`);
+  console.log(
+    `deckIndex = ` +
+      deckIndex +
+      ` and shufflerArray[deckIndex] = ` +
+      shufflerArray[deckIndex]
+  );
   let cardText = deck[shufflerArray[deckIndex]].cardText;
   gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText}! \n`;
   gameLog.scrollTop = gameLog.scrollHeight;
@@ -231,9 +279,10 @@ function endTurn() {
 }
 
 function newTurn() {
+  btnHold.disabled = true;
   document.querySelector("body").style.backgroundColor = `#242624`;
   //Shuffle the deck
-  shufflerArray = [...Array(deck.length).keys()]; // Creates an array with values 0-9
+  shufflerArray = [...Array(deck.length).keys()]; // Creates an array of deck.length starting at 0
   let currentIndex = shufflerArray.length;
   let randomIndex;
   while (currentIndex != 0) {
@@ -250,10 +299,15 @@ function newTurn() {
     ];
   }
 
+  for (let i = 0; i < shufflerArray.length; i++) {
+    console.log(`shufflerArray[${i}] = ` + shufflerArray[i]);
+  }
+//   shufflerArray[0] = 3;
+  let newTenguIndex = Math.trunc(Math.random() * (deck.length - 1)) + 1; // Get a new random index from 1 to deck.length -1
   // Prevent Tengu from being first card
   if (deck[shufflerArray[0]].cardId === `tengu`) {
     let indexOfTengu = shufflerArray[0]; // Tengu's index number in deck
-    let newTenguIndex = Math.trunc(Math.random() * (deck.length - 1)) + 1; // Get a new random index from 1 to deck.length -1
+    // let newTenguIndex = Math.trunc(Math.random() * (deck.length - 1)) + 1; // Get a new random index from 1 to deck.length -1
     shufflerArray[0] = shufflerArray[newTenguIndex];
     shufflerArray[newTenguIndex] = indexOfTengu;
   }
@@ -263,6 +317,12 @@ function newTurn() {
 
   // Show card back at new turn
   cardEle.src = `cardBack.png`;
+
+  // Kasajizou Spell effect, maybe change later TODO
+  if (kasajizouBool[activePlayer]) {
+    currentScore += 100;
+    kasajizouBool[activePlayer] = false;
+  }
 }
 
 function cardHandler(cardDrawn) {
@@ -304,7 +364,8 @@ function cardHandler(cardDrawn) {
       }
 
       case `sanmainoOfuda`: {
-        if (ofudaBool[activePlayer] === true) {
+        if (onibabaBool[activePlayer] === true) {
+          // Give player opportunity to use ofuda
           cardEle.src = deck[shufflerArray[deckIndex]].altSource;
           currentScore += deck[shufflerArray[deckIndex]].altPoints;
         } else {
@@ -325,7 +386,7 @@ function cardHandler(cardDrawn) {
       }
     }
   } else {
-    // Cards without alternate versions will simply be shown and had their standard point values added
+    // Cards without alternate versions will simply be shown and have their standard point values added
     cardEle.src = deck[shufflerArray[deckIndex]].source;
     currentScore += deck[shufflerArray[deckIndex]].points;
   }
@@ -373,6 +434,13 @@ function cardHandler(cardDrawn) {
       urashimaCounter = 3;
       break;
     }
+
+    case `warashibe`: {
+      currentScore -= 15;
+      currentScore += 15 * warashibeCounter[activePlayer];
+      warashibeCounter[activePlayer] += 1;
+      break;
+    }
   }
 
   // Update the current score
@@ -390,34 +458,51 @@ function useSpell() {
   switch (cardDrawn) {
     case `saruKani`: {
       if (!sarukaniRevenge == activePlayer) {
-        totalScores[opponent] -= 100;
-        currentScore += 100;
+        totalScores[opponent] -= monkeyAttackPts;
+        currentScore += monkeyAttackPts;
         document.getElementById(`current--${activePlayer}`).textContent =
           currentScore;
         document.getElementById(`score--${opponent}`).textContent =
           totalScores[opponent];
         sarukaniRevenge = opponent;
+        kaniRevengeTracker[opponent]++; // TODO This seems to not be working
+        gameLog.value += `${playerNames[activePlayer]} used the Monkey Attack Spell to steal ${monkeyAttackPts} from ${playerNames[opponent]}! \n`;
+        gameLog.scrollTop = gameLog.scrollHeight;
       } else if (sarukaniRevenge == activePlayer) {
-        totalScores[opponent] -= 250;
+        let revengePts = 250 * kaniRevengeTracker[activePlayer];
+        totalScores[opponent] -= revengePts;
+        kaniRevengeTracker[activePlayer] = 0;
         document.getElementById(`score--${opponent}`).textContent =
           totalScores[activePlayer];
         sarukaniRevenge = -1; // deactivate revenge
+        gameLog.value += `${playerNames[activePlayer]} used the Crab Revenge Spell to subtract ${revengePts} from ${playerNames[opponent]}! \n`;
+        gameLog.scrollTop = gameLog.scrollHeight;
       }
       break;
     }
 
     case `sanmainoOfuda`: {
-      if (!onibabaBool) {
-        onibabaBool = true;
-        ofudaBool = true;
-        // Show some fuda graphic element on that player's thing
-      }
+      ofudaBool[activePlayer] = true;
+      onibabaBool[activePlayer] = true;
+      gameLog.value += `${playerNames[activePlayer]} used the Sanmai no Ofuda spell to obtain one protective ofuda! \n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
+      // Show some fuda graphic element on that player's thing
       break;
     }
 
     case `kintarou`: {
       deckIndex = deckIndex === deck.length - 1 ? 0 : deckIndex + 1;
+      gameLog.value += `${playerNames[activePlayer]} used Kintarou's overwhelming power spell to skip over one card! \n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
       drawCard();
+      break;
+    }
+
+    case `kasaJizou`: {
+      totalScores[opponent] += 50;
+      kasajizouBool[activePlayer] = true;
+      gameLog.value += `${playerNames[activePlayer]} used the Kasa Jizou spell to donate their points to the temple! \n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
       break;
     }
   }
@@ -436,7 +521,7 @@ function useSpell() {
 // Event Listeners
 
 // This will later be the draw card listener
-btnNew.addEventListener(`click`, drawCard);
+btnNew.addEventListener(`click`, newGame);
 
 // Roll the die
 btnDraw.addEventListener(`click`, drawCard);

@@ -128,7 +128,6 @@ main {
 }
 
 .btn--new {
-  left: 28%;
   top: 8rem;
 }
 .btn--draw {
@@ -151,8 +150,9 @@ main {
 
 .btn:disabled {
   border: 1px solid #999999;
-  background-color: #cccccc;
+  background-color: #282727;
   color: #666666;
+  cursor: not-allowed;
 }
 
 .btn:focus {
