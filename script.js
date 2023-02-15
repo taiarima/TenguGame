@@ -1,8 +1,5 @@
 `use strict`;
 
-// Later I will put this code block into the new game button event
-window.onload = function () {};
-
 // Selecting elements
 const player0Ele = document.querySelector(`.player--0`);
 const player1Ele = document.querySelector(`.player--1`);
@@ -35,6 +32,10 @@ let kintarouBool = false;
 let kasajizouBool = [false, false];
 let kaniRevengeTracker = [0, 0];
 const monkeyAttackPts = 100;
+const kanjiRevengePts = -300;
+
+let bunbukuAltTextBool = false;
+let fudaAltTextBool = false;
 
 // Deck of card objects
 const deck = [
@@ -228,8 +229,7 @@ const drawCard = function () {
       shufflerArray[deckIndex]
   );
   let cardText = deck[shufflerArray[deckIndex]].cardText;
-  gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText}! \n`;
-  gameLog.scrollTop = gameLog.scrollHeight;
+  let points = deck[shufflerArray[deckIndex]].points;
   let cardDrawn = deck[shufflerArray[deckIndex]].cardId;
   if (cardsWithSpells.includes(cardDrawn)) {
     btnSpell.disabled = false;
@@ -238,7 +238,8 @@ const drawCard = function () {
     btnSpell.disabled = true;
     btnSpell.textContent = `🈚 No spell`;
   }
-  cardHandler(cardDrawn);
+  let suppString = cardHandler(cardDrawn);
+  logTextHandler(cardDrawn, cardText, points, suppString);
 
   deckIndex = deckIndex === deck.length - 1 ? 0 : deckIndex + 1;
 };
@@ -354,6 +355,8 @@ function newTurn() {
 }
 
 function cardHandler(cardDrawn) {
+  let suppString = ``;
+
   // Handling of any boolean effects that apply
   if (omusubiBool) {
     currentScore += 40;
@@ -382,9 +385,11 @@ function cardHandler(cardDrawn) {
       // Bunbuku Chagama has 50% chance of showing one face or another
       case `bunbukuChagama`: {
         if (Math.random() < 0.5) {
+          bunbukuAltTextBool = false;
           cardEle.src = deck[shufflerArray[deckIndex]].source;
           currentScore += deck[shufflerArray[deckIndex]].points;
         } else {
+          bunbukuAltTextBool = true;
           cardEle.src = deck[shufflerArray[deckIndex]].altSource;
           currentScore += deck[shufflerArray[deckIndex]].altPoints;
         }
@@ -396,9 +401,11 @@ function cardHandler(cardDrawn) {
           // Give player opportunity to use ofuda
           cardEle.src = deck[shufflerArray[deckIndex]].altSource;
           currentScore += deck[shufflerArray[deckIndex]].altPoints;
+          fudaAltTextBool = true;
         } else {
           cardEle.src = deck[shufflerArray[deckIndex]].source;
           currentScore += deck[shufflerArray[deckIndex]].points;
+          fudaAltTextBool = false;
         }
         break;
       }
@@ -444,6 +451,7 @@ function cardHandler(cardDrawn) {
       } else {
         currentScore = 0;
       }
+      suppString += `Momotarou triples your current score!`;
       break;
     }
 
@@ -474,6 +482,7 @@ function cardHandler(cardDrawn) {
   // Update the current score
   document.getElementById(`current--${activePlayer}`).textContent =
     currentScore;
+  return suppString;
 }
 
 function useSpell() {
@@ -532,6 +541,45 @@ function useSpell() {
       gameLog.value += `${playerNames[activePlayer]} used the Kasa Jizou spell to donate their points to the temple! \n`;
       gameLog.scrollTop = gameLog.scrollHeight;
       break;
+    }
+  }
+}
+
+function logTextHandler(cardDrawn, cardText, points, suppString) {
+  switch (cardDrawn) {
+    case `sanmainoOfuda`: {
+      if (fudaAltTextBool) {
+        // something
+      } else {
+        // something else
+      }
+      break;
+    }
+    case `bunbukuChagama`: {
+      if (bunbukuAltTextBool) {
+        // this is mixed up right now
+        gameLog.value += `${
+          playerNames[activePlayer]
+        } has drawn ${cardText} and had to pay ${30}! ${suppString} \n`;
+        gameLog.scrollTop = gameLog.scrollHeight;
+      } else {
+        gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText} and earned +${points}! ${suppString} \n`;
+        gameLog.scrollTop = gameLog.scrollHeight;
+      }
+      break;
+    }
+    case `warashibe`: {
+      gameLog.value += `${
+        playerNames[activePlayer]
+      } has drawn ${cardText} and earned +${
+        points * warashibeCounter[activePlayer]
+      }! \n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
+      break;
+    }
+    default: {
+      gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText} and earned +${points} points! ${suppString} \n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
     }
   }
 }
