@@ -259,4 +259,6 @@ main {
   height: 10rem;
   font-size: 2rem;
   color: white;
+  white-space: pre-wrap;
+  text-align: center;
 }

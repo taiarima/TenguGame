@@ -187,7 +187,7 @@ let deckIndex = 0;
 let currentScore = 0;
 let activePlayer = 0;
 const totalScores = [0, 0];
-const winningScore = 1000;
+const winningScore = 10;
 let playerNames = [];
 let player1Name = `Player 1`;
 let player2Name = `Player 2`;
@@ -199,7 +199,6 @@ score1Ele.textContent = 0;
 score0Ele.textContent = 0;
 
 const newGame = function () {
-  btnLog.classList.toggle(`hidden`);
   btnNew.classList.toggle(`hidden`);
   btnTurn.classList.toggle(`hidden`); // this is silly but it should work for now
   btnSpell.classList.toggle(`hidden`);
@@ -215,6 +214,21 @@ const newGame = function () {
   totalScores[0] = 0;
   totalScores[1] = 0;
 
+  // Reset any boolean values that might remain switched on
+  tsuruBool = false;
+  ofudaBool = [false, false];
+  onibabaBool = [false, false];
+  omusubiBool = false;
+  sarukaniRevenge = -1; // This will keep track of if any player can take revenge. -1 means neither player, 0 is player 1, 1 is player 2.
+  issunBool = false;
+  urashimaCounter = 0;
+  warashibeCounter = [1, 1];
+  kintarouBool = false;
+  kasajizouBool = [false, false];
+  kaniRevengeTracker = [0, 0];
+  bunbukuAltTextBool = false;
+  fudaAltTextBool = false;
+
   // Clear log
   gameLog.value = ``;
   newTurn();
@@ -225,6 +239,7 @@ const drawCard = function () {
   // If someone draws a card, they no longer get the Tsuru no Ongaeshi bonus
   if (tsuruBool) {
     tsuruBool = false;
+    gameLog.value += `${playerNames[activePlayer]} drew another card, sacrificing their Tsuru no Ongaeshi bonus! \n`;
   }
 
   cardEle.classList.remove(`hidden`);
@@ -255,6 +270,7 @@ function endTurn() {
   // Player gets extra points if ended turn with tsuru no ongaesi
   if (tsuruBool) {
     currentScore += 40;
+    gameLog.value += `${playerNames[activePlayer]} received an extra 40 points from the Tsuru no Ongaeshi bonus! \n`;
     tsuruBool = false;
   }
 
@@ -285,17 +301,8 @@ function endTurn() {
 
   // End game condition. Experimental TODO
   if (totalScores[activePlayer] >= winningScore) {
-    document
-      .querySelector(`.player--${activePlayer}`)
-      .classList.add(`player--winner`);
-    document
-      .querySelector(`.player--${activePlayer}`)
-      .classList.remove(`player--active`);
-    btnHold.classList.add(`hidden`);
-    btnSpell.classList.add(`hidden`);
-    btnDraw.classList.add(`hidden`);
-    btnNew.classList.toggle(`hidden`);
-    return;
+    endGame();
+    return; // Function should not proceed further if endGame function has been invoked
   }
 
   // Switch player
@@ -312,6 +319,37 @@ function endTurn() {
   btnTurn.classList.toggle(`hidden`);
 
   //newTurn(); // this is sitting here now but will be moved once it has its own button
+}
+
+function endGame() {
+  opponent = activePlayer == 0 ? 1 : 0;
+
+  // Add winning visual effects
+  document
+    .querySelector(`.player--${activePlayer}`)
+    .classList.add(`player--winner`);
+  document
+    .querySelector(`.player--${activePlayer}`)
+    .classList.remove(`player--active`);
+
+  // Hide buttons
+  btnHold.classList.add(`hidden`);
+  btnSpell.classList.add(`hidden`);
+  btnDraw.classList.add(`hidden`);
+  btnNew.classList.toggle(`hidden`);
+
+  // Show winning messages
+  document.getElementById(
+    `msg--${activePlayer}`
+  ).textContent += `\n ${playerNames[activePlayer]} wins!`;
+  document.getElementById(
+    `msg--${opponent}`
+  ).textContent = `You suffer the curse of \n the TENGU!`;
+  document.getElementById(`msg--${opponent}`).classList.remove(`hidden`);
+
+  gameLog.value += `\n${playerNames[activePlayer]} has won! \n${playerNames[opponent]} has lost, and suffers the curse of the TENGU!\n`;
+  gameLog.value += `Press "New Game" to play again! But beware of the TENGU! \n`;
+  gameLog.scrollTop = gameLog.scrollHeight;
 }
 
 function newTurn() {
@@ -382,10 +420,12 @@ function cardHandler(cardDrawn) {
   if (omusubiBool) {
     currentScore += 40;
     omusubiBool = false;
+    gameLog.value += `${playerNames[activePlayer]} drew another card, earning a 40 point bonus from Omusubi Kororin!`;
   }
 
   if (issunBool) {
     currentScore *= 4;
+    gameLog.value += `${playerNames[activePlayer]}'s points are doubled!`;
     issunBool = false;
   }
 
@@ -397,6 +437,9 @@ function cardHandler(cardDrawn) {
       btnHold.disabled = false;
       btnHold.textContent = `⏹️ Hold`;
       currentScore += 100; // TODO Urashima score decide exact value for bonus later
+      if (cardDrawn != `tengu`) {
+        gameLog.value += `${playerNames[activePlayer]} is awareded a tamatebako bonus pf 100 points from Urashima Tarou for drawing three additional cards!`;
+      }
     }
   }
 
@@ -479,16 +522,19 @@ function cardHandler(cardDrawn) {
     case `issunboushi`: {
       currentScore = Math.trunc(currentScore / 2);
       issunBool = true;
+      suppString = `${playerNames[activePlayer]}'s points are halved!`;
       break;
     }
 
     case `tsurunoOngaeshi`: {
       tsuruBool = true;
+      suppString = `❗You will be rewarded if you heed her words and refrain from looking at the next card!`;
       break;
     }
 
     case `urashimaTarou`: {
       urashimaCounter = 3;
+      suppString = `❗ If you do not end your turn now, you commit to drawing another three cards!`;
       break;
     }
 
@@ -557,7 +603,7 @@ function useSpell() {
     }
 
     case `kasaJizou`: {
-      totalScores[opponent] += 50;
+      totalScores[opponent] += 50; // TODO fix this
       kasajizouBool[activePlayer] = true;
       gameLog.value += `${playerNames[activePlayer]} used the Kasa Jizou spell to donate their points to the temple! \n`;
       gameLog.scrollTop = gameLog.scrollHeight;
@@ -627,13 +673,10 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
 
 // Event Listeners
 
-// This will later be the draw card listener
 btnNew.addEventListener(`click`, newGame);
 
-// Roll the die
 btnDraw.addEventListener(`click`, drawCard);
 
-// Hold to end turn
 btnHold.addEventListener(`click`, function () {
   endTurn();
 });

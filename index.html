@@ -43,7 +43,7 @@
       <button class="btn btn--hold hidden">⏹️ Hold</button>
       <button class="btn btn--turn hidden">▶️ Start next turn</button>
     </main>
-    <button class="btn btn--log hidden">📜 Show log</button>
+    <button class="btn btn--log">📜 Show log</button>
     <div class="modal-about hidden">
       <button class="close-modal">&times;</button>
       <h1>About</h1>
@@ -53,6 +53,12 @@
         Copyright © 2023 Tai Arima <br />
         ALL RIGHTS RESERVED
       </p>
+      <form id="new-game-form">
+        Player 1 Username: <input type="text" name="username1" /> Player 2
+        Username:
+        <input type="text" />
+        <input type="submit" value="Submit" />
+      </form>
     </div>
     <div class="overlay hidden"></div>
     <script src="script.js"></script>
