@@ -38,6 +38,7 @@ const kanjiRevengePts = -300;
 
 let bunbukuAltTextBool = false;
 let fudaAltTextBool = false;
+let ikkyuuBool = false;
 
 // Deck of card objects
 const deck = [
@@ -242,6 +243,10 @@ const drawCard = function () {
     gameLog.value += `${playerNames[activePlayer]} drew another card, sacrificing their Tsuru no Ongaeshi bonus! \n`;
   }
 
+  if (ikkyuuBool) {
+    document.getElementById(`msg--${activePlayer}`).classList.add(`hidden`);
+  }
+
   cardEle.classList.remove(`hidden`);
   btnSpell.classList.remove(`hidden`);
   console.log(
@@ -260,6 +265,12 @@ const drawCard = function () {
     btnSpell.disabled = true;
     btnSpell.textContent = `🈚 No spell`;
   }
+
+  if (kintarouBool) {
+    btnSpell.disabled = true;
+    btnSpell.textContent = `☑️ Spell used`;
+  }
+
   let suppString = cardHandler(cardDrawn);
   logTextHandler(cardDrawn, cardText, points, suppString);
 
@@ -274,10 +285,16 @@ function endTurn() {
     tsuruBool = false;
   }
 
+  if (ikkyuuBool) {
+    document.getElementById(`msg--${activePlayer}`).classList.add(`hidden`);
+  }
+
   // Turn off any boolean values that are no longer relevant
+  kintarouBool = false;
   omusubiBool = false;
   issunBool = false;
   urashimaCounter = 0;
+  ikkyuuBool = false;
   // Re-enable hold button if Urashima effect had disabled it
   btnHold.disabled = false;
   btnHold.textContent = `⏹️ Hold`;
@@ -544,6 +561,15 @@ function cardHandler(cardDrawn) {
       warashibeCounter[activePlayer] += 1;
       break;
     }
+
+    case `kintarou`: {
+      if (kintarouBool) {
+        btnSpell.disabled = true;
+        btnSpell.textContent = `☑️ Spell used`;
+        suppString = `You have already used Kintarou's spell once, so you cannot use it again this turn!`;
+      }
+      break;
+    }
   }
 
   // Update the current score
@@ -598,6 +624,7 @@ function useSpell() {
       deckIndex = deckIndex === deck.length - 1 ? 0 : deckIndex + 1;
       gameLog.value += `${playerNames[activePlayer]} used Kintarou's overwhelming power spell to skip over one card! \n`;
       gameLog.scrollTop = gameLog.scrollHeight;
+      kintarouBool = true;
       drawCard();
       break;
     }
@@ -609,6 +636,21 @@ function useSpell() {
       gameLog.scrollTop = gameLog.scrollHeight;
       break;
     }
+
+    case `ikkyuu`: {
+      let nextCard = deck[shufflerArray[deckIndex]].cardText;
+      gameLog.value += `${playerNames[activePlayer]} used Ikkyuu's spell to divine the identity of the next card! \n`;
+      gameLog.value += `The next card you will draw is ${nextCard} \n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
+      document
+        .getElementById(`msg--${activePlayer}`)
+        .classList.remove(`hidden`);
+      document.getElementById(
+        `msg--${activePlayer}`
+      ).textContent = `The next card you will draw is ${nextCard}`;
+      ikkyuuBool = true;
+      break;
+    }
   }
 }
 
@@ -616,10 +658,10 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
   switch (cardDrawn) {
     case `sanmainoOfuda`: {
       if (fudaAltTextBool) {
-        // something
+        gameLog.value += `${playerNames[activePlayer]} has drawn ONIBABA! You lose 50 points!`;
         gameLog.scrollTop = gameLog.scrollHeight;
       } else {
-        // something else
+        gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText} and earned ${points} points! ${suppString} \n`;
         gameLog.scrollTop = gameLog.scrollHeight;
       }
       break;
