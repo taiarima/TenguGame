@@ -26,13 +26,13 @@ let tsuruBool = false;
 let ofudaBool = [false, false];
 let onibabaBool = [false, false];
 let omusubiBool = false;
-let sarukaniRevenge = -1; // This will keep track of if any player can take revenge. -1 means neither player, 0 is player 1, 1 is player 2.
+// let sarukaniRevenge = -1; // This will keep track of if any player can take revenge. -1 means neither player, 0 is player 1, 1 is player 2.
 let issunBool = false;
 let urashimaCounter = 0;
 let warashibeCounter = [1, 1];
 let kintarouBool = false;
 let kasajizouBool = [false, false];
-let kaniRevengeTracker = [0, 0];
+let kaniRevengeTracker = [0, 0]; // this is a multiplier, the number in the opponent's index indicates how many times they have monkey attacked
 const monkeyAttackPts = 100;
 const kanjiRevengePts = -300;
 
@@ -117,10 +117,10 @@ const deck = [
   },
   {
     cardId: `bunbukuChagama`,
-    source: `10-1 Bunbuku chagama.png`,
-    altSource: `10-2 Bunbuku chagama.png`,
-    points: -25,
-    altPoints: 30,
+    source: `10-2 Bunbuku chagama.png`,
+    altSource: `10-1 Bunbuku chagama.png`,
+    points: 30,
+    altPoints: -25,
     spell: false,
     cardText: `Bunbuku Chagama`,
   },
@@ -432,6 +432,7 @@ function newTurn() {
 
 function cardHandler(cardDrawn) {
   let suppString = ``;
+  let opponent = activePlayer == 0 ? 1 : 0;
 
   // Handling of any boolean effects that apply
   if (omusubiBool) {
@@ -455,7 +456,7 @@ function cardHandler(cardDrawn) {
       btnHold.textContent = `⏹️ Hold`;
       currentScore += 100; // TODO Urashima score decide exact value for bonus later
       if (cardDrawn != `tengu`) {
-        gameLog.value += `${playerNames[activePlayer]} is awareded a tamatebako bonus pf 100 points from Urashima Tarou for drawing three additional cards!`;
+        gameLog.value += `${playerNames[activePlayer]} is awarded a tamatebako bonus pf 100 points from Urashima Tarou for drawing three additional cards!\n`;
       }
     }
   }
@@ -466,11 +467,11 @@ function cardHandler(cardDrawn) {
       // Bunbuku Chagama has 50% chance of showing one face or another
       case `bunbukuChagama`: {
         if (Math.random() < 0.5) {
-          bunbukuAltTextBool = false;
+          bunbukuAltTextBool = true;
           cardEle.src = deck[shufflerArray[deckIndex]].source;
           currentScore += deck[shufflerArray[deckIndex]].points;
         } else {
-          bunbukuAltTextBool = true;
+          bunbukuAltTextBool = false;
           cardEle.src = deck[shufflerArray[deckIndex]].altSource;
           currentScore += deck[shufflerArray[deckIndex]].altPoints;
         }
@@ -492,7 +493,7 @@ function cardHandler(cardDrawn) {
       }
       // SaruKani - Players can take revenge if relevant
       case `saruKani`: {
-        if (sarukaniRevenge === activePlayer) {
+        if (kaniRevengeTracker[opponent] != 0) {
           cardEle.src = deck[shufflerArray[deckIndex]].altSource;
           currentScore += deck[shufflerArray[deckIndex]].points;
         } else {
@@ -587,25 +588,25 @@ function useSpell() {
 
   switch (cardDrawn) {
     case `saruKani`: {
-      if (!sarukaniRevenge == activePlayer) {
+      if (kaniRevengeTracker[opponent] == 0) {
         totalScores[opponent] -= monkeyAttackPts;
         currentScore += monkeyAttackPts;
         document.getElementById(`current--${activePlayer}`).textContent =
           currentScore;
         document.getElementById(`score--${opponent}`).textContent =
           totalScores[opponent];
-        sarukaniRevenge = opponent;
-        kaniRevengeTracker[opponent]++; // TODO This seems to not be working
-        gameLog.value += `${playerNames[activePlayer]} used the Monkey Attack Spell to steal ${monkeyAttackPts} from ${playerNames[opponent]}! \n`;
+        // activate revenge
+        kaniRevengeTracker[activePlayer]++;
+        gameLog.value += `${playerNames[activePlayer]} used the Monkey Attack Spell to steal ${monkeyAttackPts} from ${playerNames[opponent]}!\n`;
         gameLog.scrollTop = gameLog.scrollHeight;
-      } else if (sarukaniRevenge == activePlayer) {
-        let revengePts = 250 * kaniRevengeTracker[activePlayer];
+      } else {
+        let revengePts = 250 * kaniRevengeTracker[opponent];
         totalScores[opponent] -= revengePts;
-        kaniRevengeTracker[activePlayer] = 0;
+        kaniRevengeTracker[opponent] = 0;
         document.getElementById(`score--${opponent}`).textContent =
-          totalScores[activePlayer];
-        sarukaniRevenge = -1; // deactivate revenge
-        gameLog.value += `${playerNames[activePlayer]} used the Crab Revenge Spell to subtract ${revengePts} from ${playerNames[opponent]}! \n`;
+          totalScores[opponent];
+        // deactivate revenge
+        gameLog.value += `${playerNames[activePlayer]} used the Crab Revenge Spell to subtract ${revengePts} points from ${playerNames[opponent]}!\n`;
         gameLog.scrollTop = gameLog.scrollHeight;
       }
       break;
@@ -671,7 +672,7 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
         // this is mixed up right now
         gameLog.value += `${
           playerNames[activePlayer]
-        } has drawn ${cardText} and had to pay ${30} points!${suppString} \n`;
+        } has drawn ${cardText} and had to pay ${25} points!${suppString} \n`;
         gameLog.scrollTop = gameLog.scrollHeight;
       } else {
         gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText} and earned +${points}! ${suppString} \n`;
