@@ -26,7 +26,6 @@ let tsuruBool = false;
 let ofudaBool = [false, false];
 let onibabaBool = [false, false];
 let omusubiBool = false;
-// let sarukaniRevenge = -1; // This will keep track of if any player can take revenge. -1 means neither player, 0 is player 1, 1 is player 2.
 let issunBool = false;
 let urashimaCounter = 0;
 let warashibeCounter = [1, 1];
@@ -34,7 +33,7 @@ let kintarouBool = false;
 let kasajizouBool = [false, false];
 let kaniRevengeTracker = [0, 0]; // this is a multiplier, the number in the opponent's index indicates how many times they have monkey attacked
 const monkeyAttackPts = 100;
-const kanjiRevengePts = -300;
+const kanjiRevengePts = -300; // this isn't coded in
 let bunbukuAltTextBool = false;
 let fudaAltTextBool = false;
 let ikkyuuBool = false;
@@ -222,7 +221,6 @@ const newGame = function () {
   ofudaBool = [false, false];
   onibabaBool = [false, false];
   omusubiBool = false;
-  sarukaniRevenge = -1; // This will keep track of if any player can take revenge. -1 means neither player, 0 is player 1, 1 is player 2.
   issunBool = false;
   urashimaCounter = 0;
   warashibeCounter = [1, 1];
@@ -245,18 +243,14 @@ const drawCard = function () {
     gameLog.value += `${playerNames[activePlayer]} drew another card, sacrificing their Tsuru no Ongaeshi bonus! \n`;
   }
 
+  // Remove any messages from Ikkyuu-san spell that might be present
   if (ikkyuuBool) {
     document.getElementById(`msg--${activePlayer}`).classList.add(`hidden`);
   }
 
   cardEle.classList.remove(`hidden`);
   btnSpell.classList.remove(`hidden`);
-  console.log(
-    `deckIndex = ` +
-      deckIndex +
-      ` and shufflerArray[deckIndex] = ` +
-      shufflerArray[deckIndex]
-  );
+
   let cardText = deck[shufflerArray[deckIndex]].cardText;
   let points = deck[shufflerArray[deckIndex]].points;
   let cardDrawn = deck[shufflerArray[deckIndex]].cardId;
@@ -268,10 +262,10 @@ const drawCard = function () {
     btnSpell.textContent = `🈚 No spell`;
   }
 
-  if (kintarouBool) {
-    btnSpell.disabled = true;
-    btnSpell.textContent = `☑️ Spell used`;
-  }
+  // if (kintarouBool) {
+  //   btnSpell.disabled = true;
+  //   btnSpell.textContent = `☑️ Spell used`;
+  // }
 
   let suppString = cardHandler(cardDrawn);
   logTextHandler(cardDrawn, cardText, points, suppString);
@@ -361,8 +355,6 @@ function endTurn() {
 
   // Show new turn button
   btnTurn.classList.toggle(`hidden`);
-
-  //newTurn(); // this is sitting here now but will be moved once it has its own button
 }
 
 function endGame() {
@@ -397,7 +389,7 @@ function endGame() {
 }
 
 function newTurn() {
-  gameLog.value += `\n >>> Begin ${playerNames[activePlayer]}'s turn!! >>>> \n`;
+  gameLog.value += `\n>>> Begin ${playerNames[activePlayer]}'s turn!! >>>> \n`;
   gameLog.scrollTop = gameLog.scrollHeight;
   // Reveal all buttons
   btnDraw.classList.toggle(`hidden`);
@@ -420,21 +412,15 @@ function newTurn() {
   while (currentIndex != 0) {
     // Fischer-Yates shuffle to randomize the values
 
-    // Pick a remaining element.
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
 
-    // And swap it with the current element.
     [shufflerArray[currentIndex], shufflerArray[randomIndex]] = [
       shufflerArray[randomIndex],
       shufflerArray[currentIndex],
     ];
   }
 
-  for (let i = 0; i < shufflerArray.length; i++) {
-    console.log(`shufflerArray[${i}] = ` + shufflerArray[i]);
-  }
-  //   shufflerArray[0] = 3;
   let newTenguIndex = Math.trunc(Math.random() * (deck.length - 1)) + 1; // Get a new random index from 1 to deck.length -1
   // Prevent Tengu from being first card
   if (deck[shufflerArray[0]].cardId === `tengu`) {
@@ -455,7 +441,9 @@ function newTurn() {
   if (kasajizouBool[activePlayer]) {
     currentScore += 200;
     kasajizouBool[activePlayer] = false;
-    gameLog.value += `${playerNames[activePlayer]} received 200 points at the beginning of this round from the effect of the Kasa Jizou spell!`;
+    gameLog.value += `${playerNames[activePlayer]} received 200 points at the beginning of this round from the effect of the Kasa Jizou spell!\n`;
+    document.getElementById(`current--${activePlayer}`).textContent =
+      currentScore;
   }
 }
 
@@ -467,7 +455,7 @@ function cardHandler(cardDrawn) {
   if (omusubiBool) {
     currentScore += 40;
     omusubiBool = false;
-    gameLog.value += `${playerNames[activePlayer]} drew another card, earning a 40 point bonus from Omusubi Kororin!`;
+    gameLog.value += `${playerNames[activePlayer]} drew another card, earning a 40 point bonus from Omusubi Kororin!\n`;
   }
 
   if (issunBool) {
@@ -584,12 +572,12 @@ function cardHandler(cardDrawn) {
 
     case `urashimaTarou`: {
       urashimaCounter = 3;
-      suppString = `❗ If you do not end your turn now, you commit to drawing another three cards!`;
+      suppString = `❗If you do not end your turn now, you commit to drawing another three cards!`;
       break;
     }
 
     case `warashibe`: {
-      // deck index of warashibe is 11
+      // deck index of warashibe is 11, maybe make this code more intelligent later
       currentScore -= deck[11].points;
       currentScore += deck[11].points * warashibeCounter[activePlayer];
       warashibeCounter[activePlayer] += 1;
@@ -650,7 +638,7 @@ function useSpell() {
       onibabaBool[activePlayer] = true;
       gameLog.value += `${playerNames[activePlayer]} used the Sanmai no Ofuda spell to obtain one protective ofuda! \n`;
       gameLog.scrollTop = gameLog.scrollHeight;
-      // Show some fuda graphic element on that player's thing
+      // Show some fuda graphic element on that player's thing TODO
       break;
     }
 
@@ -674,8 +662,11 @@ function useSpell() {
     }
 
     case `ikkyuu`: {
+      currentScore -= 50;
+      document.getElementById(`current--${activePlayer}`).textContent =
+        currentScore;
       let nextCard = deck[shufflerArray[deckIndex]].cardText;
-      gameLog.value += `${playerNames[activePlayer]} used Ikkyuu's spell to divine the identity of the next card! \n`;
+      gameLog.value += `${playerNames[activePlayer]} used Ikkyuu-san's spell and paid 50 points to peek at the identity of the next card! \n`;
       gameLog.value += `The next card you will draw is ${nextCard} \n`;
       gameLog.scrollTop = gameLog.scrollHeight;
       document
@@ -722,10 +713,10 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
         // this is mixed up right now
         gameLog.value += `${
           playerNames[activePlayer]
-        } has drawn ${cardText} and had to pay ${25} points!${suppString} \n`;
+        } drew ${cardText} and had to pay ${25} points!${suppString} \n`;
         gameLog.scrollTop = gameLog.scrollHeight;
       } else {
-        gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText} and earned +${points}! ${suppString} \n`;
+        gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText} and earned +${points} points! ${suppString} \n`;
         gameLog.scrollTop = gameLog.scrollHeight;
       }
       break;
@@ -735,7 +726,7 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
         playerNames[activePlayer]
       } has drawn ${cardText} and earned +${
         points * (warashibeCounter[activePlayer] - 1)
-      }! \n`; // Warashibe counter needs to be decremented by one since it is incremented after points calculated
+      } points! \n`; // Warashibe counter needs to be decremented by one since it is incremented after points calculated
       gameLog.scrollTop = gameLog.scrollHeight;
       break;
     }
@@ -748,7 +739,7 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
       break;
     }
     default: {
-      gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText} and earned ${points} points! ${suppString} \n`;
+      gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText} and earned ${points} points!\n${suppString}\n`;
       gameLog.scrollTop = gameLog.scrollHeight;
     }
   }
