@@ -39,7 +39,7 @@ main {
 
 .player {
   flex: 50%;
-  padding: 9rem;
+  padding: 12rem;
   display: flex;
   flex-direction: column;
   align-items: center;

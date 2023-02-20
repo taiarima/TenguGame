@@ -35,10 +35,12 @@ let kasajizouBool = [false, false];
 let kaniRevengeTracker = [0, 0]; // this is a multiplier, the number in the opponent's index indicates how many times they have monkey attacked
 const monkeyAttackPts = 100;
 const kanjiRevengePts = -300;
-
 let bunbukuAltTextBool = false;
 let fudaAltTextBool = false;
 let ikkyuuBool = false;
+let kamotoriCounter = 0;
+let kamotoriBool = false;
+let kobutoriCounter = 0;
 
 // Deck of card objects
 const deck = [
@@ -145,7 +147,7 @@ const deck = [
     source: `13  kamotori gonbei.png`,
     altSource: null,
     points: 15,
-    spell: true, // TODO haven't coded in spell yet
+    spell: true,
     cardText: `Kamo-tori Gonbei`,
   },
   {
@@ -153,7 +155,7 @@ const deck = [
     source: `14 ikkyuusan.png`,
     altSource: null,
     points: 25,
-    spell: true, // TODO haven't coded in spell yet
+    spell: true,
     cardText: `Ikkyuu-san`,
   },
   {
@@ -161,7 +163,7 @@ const deck = [
     source: `15 kobutori jiisan.png`,
     altSource: null,
     points: 25,
-    spell: true, // TODO haven't coded in spell yet
+    spell: true,
     cardText: `Kobu-tori Jiisan`,
   },
 ];
@@ -274,6 +276,15 @@ const drawCard = function () {
   let suppString = cardHandler(cardDrawn);
   logTextHandler(cardDrawn, cardText, points, suppString);
 
+  if (kobutoriCounter > 0) {
+    kobutoriCounter--;
+    if (kobutoriCounter == 0 && cardDrawn != `tengu`) {
+      currentScore += 100;
+      gameLog.value += `You drew two more cards and won the Kobu-tori Jiisan spell bonus!\n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
+    }
+  }
+
   deckIndex = deckIndex === deck.length - 1 ? 0 : deckIndex + 1;
 };
 
@@ -282,11 +293,24 @@ function endTurn() {
   if (tsuruBool) {
     currentScore += 40;
     gameLog.value += `${playerNames[activePlayer]} received an extra 40 points from the Tsuru no Ongaeshi bonus! \n`;
+    gameLog.scrollTop = gameLog.scrollHeight;
     tsuruBool = false;
   }
 
   if (ikkyuuBool) {
     document.getElementById(`msg--${activePlayer}`).classList.add(`hidden`);
+  }
+
+  if (kamotoriBool) {
+    if (currentScore - kamotoriCounter >= 100) {
+      currentScore *= 2;
+      gameLog.value += `${playerNames[activePlayer]} won Kamo-tori Gonbei's gamble to double their points!\n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
+    } else {
+      currentScore -= 100;
+      gameLog.value += `${playerNames[activePlayer]} lost Kamo-tori Gonbei's gamble and received a 100 point penalty!\n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
+    }
   }
 
   // Turn off any boolean values that are no longer relevant
@@ -295,6 +319,9 @@ function endTurn() {
   issunBool = false;
   urashimaCounter = 0;
   ikkyuuBool = false;
+  kamotoriCounter = 0;
+  kamotoriBool = false;
+  kobutoriCounter = false;
   // Re-enable hold button if Urashima effect had disabled it
   btnHold.disabled = false;
   btnHold.textContent = `⏹️ Hold`;
@@ -302,10 +329,10 @@ function endTurn() {
   // Add any points gained/lost to total and update GUI
   document.getElementById(`msg--${activePlayer}`).classList.remove(`hidden`);
   document.getElementById(`msg--${activePlayer}`).textContent = `${
-    currentScore >= 0 ? `+` : `-`
+    currentScore >= 0 ? `+` : ``
   }${currentScore} points this round!`;
   gameLog.value += `${playerNames[activePlayer]} earned ${
-    currentScore >= 0 ? `+` : `-`
+    currentScore >= 0 ? `+` : ``
   }${currentScore} points this round!`;
   gameLog.scrollTop = gameLog.scrollHeight;
 
@@ -361,7 +388,7 @@ function endGame() {
   ).textContent += `\n ${playerNames[activePlayer]} wins!`;
   document.getElementById(
     `msg--${opponent}`
-  ).textContent = `You suffer the curse of \n the TENGU!`;
+  ).textContent = `${playerNames[opponent]} suffers the curse of \n the TENGU!`;
   document.getElementById(`msg--${opponent}`).classList.remove(`hidden`);
 
   gameLog.value += `\n${playerNames[activePlayer]} has won! \n${playerNames[opponent]} has lost, and suffers the curse of the TENGU!\n`;
@@ -374,11 +401,12 @@ function newTurn() {
   gameLog.scrollTop = gameLog.scrollHeight;
   // Reveal all buttons
   btnDraw.classList.toggle(`hidden`);
-  btnSpell.classList.toggle(`hidden`);
+  // btnSpell.classList.toggle(`hidden`);
   btnHold.classList.toggle(`hidden`);
 
   // Hide new turn button
   btnTurn.classList.toggle(`hidden`);
+  btnSpell.classList.add(`hidden`);
 
   roundMsg0.classList.add(`hidden`);
   roundMsg1.classList.add(`hidden`);
@@ -425,8 +453,9 @@ function newTurn() {
 
   // Kasajizou Spell effect, maybe change later TODO
   if (kasajizouBool[activePlayer]) {
-    currentScore += 100;
+    currentScore += 200;
     kasajizouBool[activePlayer] = false;
+    gameLog.value += `${playerNames[activePlayer]} received 200 points at the beginning of this round from the effect of the Kasa Jizou spell!`;
   }
 }
 
@@ -456,7 +485,7 @@ function cardHandler(cardDrawn) {
       btnHold.textContent = `⏹️ Hold`;
       currentScore += 100; // TODO Urashima score decide exact value for bonus later
       if (cardDrawn != `tengu`) {
-        gameLog.value += `${playerNames[activePlayer]} is awarded a tamatebako bonus pf 100 points from Urashima Tarou for drawing three additional cards!\n`;
+        gameLog.value += `${playerNames[activePlayer]} is awarded a tamatebako bonus of 100 points from Urashima Tarou for drawing three additional cards!\n`;
       }
     }
   }
@@ -483,6 +512,9 @@ function cardHandler(cardDrawn) {
           // Give player opportunity to use ofuda
           cardEle.src = deck[shufflerArray[deckIndex]].altSource;
           currentScore += deck[shufflerArray[deckIndex]].altPoints;
+          // disable spell button
+          btnSpell.disabled = true;
+          btnSpell.textContent = `🈚 No spell`;
           fudaAltTextBool = true;
         } else {
           cardEle.src = deck[shufflerArray[deckIndex]].source;
@@ -557,8 +589,9 @@ function cardHandler(cardDrawn) {
     }
 
     case `warashibe`: {
-      currentScore -= 15;
-      currentScore += 15 * warashibeCounter[activePlayer];
+      // deck index of warashibe is 11
+      currentScore -= deck[11].points;
+      currentScore += deck[11].points * warashibeCounter[activePlayer];
       warashibeCounter[activePlayer] += 1;
       break;
     }
@@ -631,9 +664,11 @@ function useSpell() {
     }
 
     case `kasaJizou`: {
-      totalScores[opponent] += 50; // TODO fix this
+      currentScore = 0;
+      document.getElementById(`current--${activePlayer}`).textContent =
+        currentScore;
       kasajizouBool[activePlayer] = true;
-      gameLog.value += `${playerNames[activePlayer]} used the Kasa Jizou spell to donate their points to the temple! \n`;
+      gameLog.value += `${playerNames[activePlayer]} used the Kasa Jizou spell to donate their points to the temple!\n`;
       gameLog.scrollTop = gameLog.scrollHeight;
       break;
     }
@@ -650,6 +685,21 @@ function useSpell() {
         `msg--${activePlayer}`
       ).textContent = `The next card you will draw is ${nextCard}`;
       ikkyuuBool = true;
+      break;
+    }
+
+    case `kamotori`: {
+      kamotoriBool = true;
+      gameLog.value += `You have used Kamo-tori Gonbei's spell to gamble to double your points!\nIf you can earn another 100 points this round, your points will be doubled!\n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
+      kamotoriCounter = currentScore;
+      break;
+    }
+
+    case `kobutori`: {
+      kobutoriCounter = 2;
+      gameLog.value += `You have used Kobu-tori Jiisan's spell! You must draw two cards to receive a bonus!\n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
       break;
     }
   }
@@ -684,8 +734,8 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
       gameLog.value += `${
         playerNames[activePlayer]
       } has drawn ${cardText} and earned +${
-        points * warashibeCounter[activePlayer]
-      }! \n`;
+        points * (warashibeCounter[activePlayer] - 1)
+      }! \n`; // Warashibe counter needs to be decremented by one since it is incremented after points calculated
       gameLog.scrollTop = gameLog.scrollHeight;
       break;
     }
