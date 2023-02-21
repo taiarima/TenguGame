@@ -42,6 +42,7 @@ let ikkyuuBool = false;
 let kamotoriCounter = 0;
 let kamotoriBool = false;
 let kobutoriCounter = 0;
+let tenguBool = false;
 
 // Deck of card objects
 const deck = [
@@ -106,7 +107,7 @@ const deck = [
     source: `08-1 Sanmai no Ofuda.png`,
     altSource: `08-2 Onibaba.png`,
     points: 15,
-    altPoints: -50,
+    altPoints: -100,
     spell: true,
     cardText: `Sanmai no Ofuda`,
   },
@@ -243,7 +244,7 @@ const drawCard = function () {
   document.querySelector(`.tengu-img`).src = `tenguCenter.png`;
   document.querySelector("body").style.backgroundColor = `#242624`;
   btnHold.disabled = false;
-  // If someone draws a card, they no longer get the Tsuru no Ongaeshi bonus
+
   if (tsuruBool) {
     tsuruBool = false;
     gameLog.value += `${playerNames[activePlayer]} drew another card, sacrificing their Tsuru no Ongaeshi bonus! \n`;
@@ -276,15 +277,6 @@ const drawCard = function () {
   let suppString = cardHandler(cardDrawn);
   logTextHandler(cardDrawn, cardText, points, suppString);
 
-  if (kobutoriCounter > 0) {
-    kobutoriCounter--;
-    if (kobutoriCounter == 0 && cardDrawn != `tengu`) {
-      currentScore += 100;
-      gameLog.value += `You drew two more cards and won the Kobu-tori Jiisan spell bonus!\n`;
-      gameLog.scrollTop = gameLog.scrollHeight;
-    }
-  }
-
   deckIndex = deckIndex === deck.length - 1 ? 0 : deckIndex + 1;
 };
 
@@ -295,6 +287,12 @@ function endTurn() {
     gameLog.value += `${playerNames[activePlayer]} received an extra 40 points from the Tsuru no Ongaeshi bonus! \n`;
     gameLog.scrollTop = gameLog.scrollHeight;
     tsuruBool = false;
+  }
+
+  if (tenguBool) {
+    tenguEffect();
+    tenguBool = false;
+    btnDraw.disabled = false;
   }
 
   if (ikkyuuBool) {
@@ -395,6 +393,7 @@ function endGame() {
 }
 
 function newTurn() {
+  document.querySelector(`.tengu-img`).src = `tenguCenter.png`;
   gameLog.value += `\n>>> Begin ${playerNames[activePlayer]}'s turn!! >>>> \n`;
   gameLog.scrollTop = gameLog.scrollHeight;
   // Reveal all buttons
@@ -410,6 +409,7 @@ function newTurn() {
   roundMsg1.classList.add(`hidden`);
 
   btnHold.disabled = true;
+  btnDraw.disabled = false;
   document.querySelector("body").style.backgroundColor = `#242624`;
   //Shuffle the deck
   shufflerArray = [...Array(deck.length).keys()]; // Creates an array of deck.length starting at 0
@@ -457,8 +457,8 @@ function cardHandler(cardDrawn) {
   let suppString = ``;
   let opponent = activePlayer == 0 ? 1 : 0;
 
-  // Handling of any boolean effects that apply
-  if (omusubiBool) {
+  // Handling boolean card effects
+  if (omusubiBool && cardDrawn != `tengu`) {
     currentScore += 40;
     omusubiBool = false;
     gameLog.value += `${playerNames[activePlayer]} drew another card, earning a 40 point bonus from Omusubi Kororin!\n`;
@@ -466,7 +466,7 @@ function cardHandler(cardDrawn) {
 
   if (issunBool) {
     currentScore *= 4;
-    gameLog.value += `${playerNames[activePlayer]}'s points are doubled!`;
+    gameLog.value += `${playerNames[activePlayer]}'s points are doubled!\n`;
     issunBool = false;
   }
 
@@ -481,6 +481,18 @@ function cardHandler(cardDrawn) {
       if (cardDrawn != `tengu`) {
         gameLog.value += `${playerNames[activePlayer]} is awarded a tamatebako bonus of 100 points from Urashima Tarou for drawing three additional cards!\n`;
       }
+    }
+  }
+  if (kobutoriCounter > 0) {
+    kobutoriCounter--;
+    btnHold.disabled = true;
+    btnHold.textContent = `❌ Cannot hold`;
+    if (kobutoriCounter == 0 && cardDrawn != `tengu`) {
+      currentScore += 100;
+      gameLog.value += `You drew two more cards and won 100 points from the Kobu-tori Jiisan spell bonus!\n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
+      btnHold.textContent = `⏹️ Hold`;
+      btnHold.disabled = false;
     }
   }
 
@@ -502,6 +514,10 @@ function cardHandler(cardDrawn) {
       }
 
       case `sanmainoOfuda`: {
+        if (urashimaCounter > 0 || kobutoriCounter > 0) {
+          btnSpell.disabled = true;
+          gameLog.value += `You cannot obtain an ofuda right now because you committed to drawing more cards!\n`;
+        }
         if (onibabaBool[activePlayer] === true) {
           // Give player opportunity to use ofuda
           cardEle.src = deck[shufflerArray[deckIndex]].altSource;
@@ -514,6 +530,11 @@ function cardHandler(cardDrawn) {
           cardEle.src = deck[shufflerArray[deckIndex]].source;
           currentScore += deck[shufflerArray[deckIndex]].points;
           fudaAltTextBool = false;
+          suppString = `If you use your spell to obtain a protective Ofuda, your turn will be over!`;
+        }
+        if (urashimaCounter > 0 || kobutoriCounter > 0) {
+          btnSpell.disabled = true;
+          suppString = `You cannot obtain an ofuda right now because you committed to drawing more cards!\n`;
         }
         break;
       }
@@ -539,9 +560,13 @@ function cardHandler(cardDrawn) {
     case `tengu`: {
       // give player opportunity to use ofuda if available
       if (ofudaBool[activePlayer]) {
+        btnDraw.disabled = true;
+        btnHold.textContent = `👺 ACCEPT YOUR FATE`;
+        tenguBool = true;
         // change hold buutton to "Accept fate"
         // player can either use ofuda or accept fate, all other buttons disabled
         // 30 second timer
+        return ``;
       } else {
         suppString = tenguEffect();
       }
@@ -549,6 +574,8 @@ function cardHandler(cardDrawn) {
       // document.querySelector("body").style.backgroundColor = `crimson`;
       // suppString = `Your turn is over! \n`;
       // return suppString;
+
+      return suppString;
     }
 
     case `omusubiKororin`: {
@@ -589,7 +616,7 @@ function cardHandler(cardDrawn) {
       // deck index of warashibe is 11, maybe make this code more intelligent later
       currentScore -= deck[11].points;
       currentScore += deck[11].points * warashibeCounter[activePlayer];
-      warashibeCounter[activePlayer] += 1;
+      warashibeCounter[activePlayer] *= 2;
       break;
     }
 
@@ -610,9 +637,12 @@ function cardHandler(cardDrawn) {
 }
 
 function tenguEffect() {
-  currentScore = 0;
+  if (currentScore > 0) {
+    currentScore = 0;
+  }
   document.querySelector("body").style.backgroundColor = `crimson`;
   let suppString = `Your turn is over! \n`;
+  // add logging and endturn here
   return suppString;
 }
 
@@ -637,7 +667,7 @@ function useSpell() {
         gameLog.value += `${playerNames[activePlayer]} used the Monkey Attack Spell to steal ${monkeyAttackPts} from ${playerNames[opponent]}!\n`;
         gameLog.scrollTop = gameLog.scrollHeight;
       } else {
-        let revengePts = 250 * kaniRevengeTracker[opponent];
+        let revengePts = kanjiRevengePts * kaniRevengeTracker[opponent];
         totalScores[opponent] -= revengePts;
         kaniRevengeTracker[opponent] = 0;
         document.getElementById(`score--${opponent}`).textContent =
@@ -657,7 +687,9 @@ function useSpell() {
       onibabaBool[activePlayer] = true;
       gameLog.value += `${playerNames[activePlayer]} used the Sanmai no Ofuda spell to obtain one protective ofuda! \n`;
       gameLog.scrollTop = gameLog.scrollHeight;
-      // Show some fuda graphic element on that player's thing TODO
+      btnDraw.disabled = true;
+      btnHold.disabled = false;
+      btnHold.textContent = `⏹️ End turn`;
       break;
     }
 
@@ -681,11 +713,11 @@ function useSpell() {
     }
 
     case `ikkyuu`: {
-      currentScore -= 50;
+      currentScore -= 75;
       document.getElementById(`current--${activePlayer}`).textContent =
         currentScore;
       let nextCard = deck[shufflerArray[deckIndex]].cardText;
-      gameLog.value += `${playerNames[activePlayer]} used Ikkyuu-san's spell and paid 50 points to peek at the identity of the next card! \n`;
+      gameLog.value += `${playerNames[activePlayer]} used Ikkyuu-san's spell and paid 75 points to peek at the identity of the next card! \n`;
       gameLog.value += `The next card you will draw is ${nextCard} \n`;
       gameLog.scrollTop = gameLog.scrollHeight;
       document
@@ -719,7 +751,7 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
   switch (cardDrawn) {
     case `sanmainoOfuda`: {
       if (fudaAltTextBool) {
-        gameLog.value += `${playerNames[activePlayer]} has drawn ONIBABA! You lose 50 points!\n`;
+        gameLog.value += `${playerNames[activePlayer]} has drawn ONIBABA! You lose ${deck[7].altPoints} points!\n`;
         gameLog.scrollTop = gameLog.scrollHeight;
       } else {
         gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText} and earned ${points} points! ${suppString} \n`;
@@ -744,17 +776,21 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
       gameLog.value += `${
         playerNames[activePlayer]
       } has drawn ${cardText} and earned +${
-        points * (warashibeCounter[activePlayer] - 1)
+        points * (warashibeCounter[activePlayer] / 2)
       } points! \n`; // Warashibe counter needs to be decremented by one since it is incremented after points calculated
       gameLog.scrollTop = gameLog.scrollHeight;
       break;
     }
     case `tengu`: {
-      gameLog.value +=
-        `${playerNames[activePlayer]} has drawn TENGU! You earn zero points this round! ` +
-        suppString;
+      if (!ofudaBool[activePlayer]) {
+        gameLog.value +=
+          `${playerNames[activePlayer]} has drawn TENGU! You earn zero points this round! ` +
+          suppString;
+      }
       gameLog.scrollTop = gameLog.scrollHeight;
-      endTurn(); // this is a weird place for this but it works
+      if (!ofudaBool[activePlayer]) {
+        endTurn(); // this is a weird place for this but it works
+      }
       break;
     }
     default: {
@@ -768,34 +804,33 @@ const ofudaHandler = function () {
   let cardDrawn = deck[shufflerArray[deckIndex - 1]].cardId;
   if (cardDrawn != `tengu` && cardDrawn != `sanmainoOfuda`) {
     gameLog.value += `You cannot use your Ofuda against this card!\n`;
+    gameLog.scrollTop = gameLog.scrollHeight;
     return;
   }
   ofudaBool[activePlayer] = false;
   document.querySelector(`.ofuda--${activePlayer}`).classList.add(`hidden`);
-  document.querySelector("body").style.backgroundColor = `#22b14c`;
+  document.querySelector(`body`).style.backgroundColor = `#22b14c`;
   document.querySelector(`.tengu-img`).src = `tenguAlt.png`;
   // Make tengu face different
   if (cardDrawn == `tengu`) {
     cardEle.src = `grayTengu.png`;
     gameLog.value += `You used your Ofuda to escape from the TENGU!\n`;
-    gameLog.value += `You lose no points and can continue your turn!\n`;
+    gameLog.value += `You lose no points, but your turn is over!\n`;
     gameLog.scrollTop = gameLog.scrollHeight;
+    tenguBool = false;
+    btnHold.textContent = `⏹️ End turn`;
   } else if (cardDrawn == `sanmainoOfuda`) {
     cardEle.src = `grayOnibaba.png`;
-    currentScore += 50;
+    currentScore += Math.abs(deck[7].altPoints);
+    document.getElementById(`current--${activePlayer}`).textContent =
+      currentScore;
     gameLog.value += `You used your Ofuda to escape from ONIBABA! But beware, she might come back!\n`;
-    gameLog.value += `You get the 50 points she stole back, and can continue your turn!\n`;
+    gameLog.value += `You get the ${deck[7].altPoints} points she stole back, and can continue your turn!\n`;
     gameLog.scrollTop = gameLog.scrollHeight;
   }
-  // do stuff
-  // convert the buttons back
-  // turn the screen green
-  // deliver a message in gameLog
+
   // deliver a message in the roundmsg
-  // remove the fuda image
-  // revert the fuda bool
-  // ofuda should only be usable for:
-  // onibaba, tengu
+
   // set up in cardHandler
   // if cardDrawn != tengu or onibaba
   // --> disable ofuda button
