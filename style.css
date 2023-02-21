@@ -262,3 +262,20 @@ main {
   white-space: pre-wrap;
   text-align: center;
 }
+
+.ofuda--0 {
+  height: 10rem;
+  position: absolute;
+  top: 10rem;
+  cursor: pointer;
+  left: 5rem;
+}
+
+.ofuda--1 {
+  height: 10rem;
+  position: absolute;
+  top: 10rem;
+  left: 95rem;
+  cursor: pointer;
+
+}

@@ -20,6 +20,8 @@ const overlay = document.querySelector(`.overlay`);
 const gameLog = document.querySelector(`.log`);
 const roundMsg0 = document.getElementById(`msg--0`);
 const roundMsg1 = document.getElementById(`msg--1`);
+const btnOfuda0 = document.querySelector(`.ofuda--0`);
+const btnOfuda1 = document.querySelector(`.ofuda--1`);
 
 // Variables for card effects
 let tsuruBool = false;
@@ -53,7 +55,7 @@ const deck = [
   },
   {
     cardId: `momotarou`,
-    source: `02 Momotarou.png`,
+    source: `saya momotarou.png`,
     altSource: null,
     points: 10,
     spell: false,
@@ -189,7 +191,7 @@ let deckIndex = 0;
 let currentScore = 0;
 let activePlayer = 0;
 const totalScores = [0, 0];
-const winningScore = 10;
+const winningScore = 1000;
 let playerNames = [];
 let player1Name = `Player 1`;
 let player2Name = `Player 2`;
@@ -229,6 +231,8 @@ const newGame = function () {
   kaniRevengeTracker = [0, 0];
   bunbukuAltTextBool = false;
   fudaAltTextBool = false;
+  btnOfuda0.classList.add(`hidden`);
+  btnOfuda1.classList.add(`hidden`);
 
   // Clear log
   gameLog.value = ``;
@@ -236,6 +240,8 @@ const newGame = function () {
 };
 
 const drawCard = function () {
+  document.querySelector(`.tengu-img`).src = `tenguCenter.png`;
+  document.querySelector("body").style.backgroundColor = `#242624`;
   btnHold.disabled = false;
   // If someone draws a card, they no longer get the Tsuru no Ongaeshi bonus
   if (tsuruBool) {
@@ -533,13 +539,16 @@ function cardHandler(cardDrawn) {
     case `tengu`: {
       // give player opportunity to use ofuda if available
       if (ofudaBool[activePlayer]) {
-        // ask player if they want to use their ofuda
-        console.log(`do you want to use your ofuda`);
+        // change hold buutton to "Accept fate"
+        // player can either use ofuda or accept fate, all other buttons disabled
+        // 30 second timer
+      } else {
+        suppString = tenguEffect();
       }
-      currentScore = 0;
-      document.querySelector("body").style.backgroundColor = `crimson`;
-      suppString = `Your turn is over! \n`;
-      return suppString;
+      // currentScore = 0;
+      // document.querySelector("body").style.backgroundColor = `crimson`;
+      // suppString = `Your turn is over! \n`;
+      // return suppString;
     }
 
     case `omusubiKororin`: {
@@ -600,6 +609,13 @@ function cardHandler(cardDrawn) {
   return suppString;
 }
 
+function tenguEffect() {
+  currentScore = 0;
+  document.querySelector("body").style.backgroundColor = `crimson`;
+  let suppString = `Your turn is over! \n`;
+  return suppString;
+}
+
 function useSpell() {
   let cardDrawn = deck[shufflerArray[deckIndex - 1]].cardId;
   let opponent = activePlayer === 1 ? 0 : 1;
@@ -634,6 +650,9 @@ function useSpell() {
     }
 
     case `sanmainoOfuda`: {
+      document
+        .querySelector(`.ofuda--${activePlayer}`)
+        .classList.remove(`hidden`);
       ofudaBool[activePlayer] = true;
       onibabaBool[activePlayer] = true;
       gameLog.value += `${playerNames[activePlayer]} used the Sanmai no Ofuda spell to obtain one protective ofuda! \n`;
@@ -700,7 +719,7 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
   switch (cardDrawn) {
     case `sanmainoOfuda`: {
       if (fudaAltTextBool) {
-        gameLog.value += `${playerNames[activePlayer]} has drawn ONIBABA! You lose 50 points!`;
+        gameLog.value += `${playerNames[activePlayer]} has drawn ONIBABA! You lose 50 points!\n`;
         gameLog.scrollTop = gameLog.scrollHeight;
       } else {
         gameLog.value += `${playerNames[activePlayer]} has drawn ${cardText} and earned ${points} points! ${suppString} \n`;
@@ -744,6 +763,43 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
     }
   }
 }
+
+const ofudaHandler = function () {
+  let cardDrawn = deck[shufflerArray[deckIndex - 1]].cardId;
+  if (cardDrawn != `tengu` && cardDrawn != `sanmainoOfuda`) {
+    gameLog.value += `You cannot use your Ofuda against this card!\n`;
+    return;
+  }
+  ofudaBool[activePlayer] = false;
+  document.querySelector(`.ofuda--${activePlayer}`).classList.add(`hidden`);
+  document.querySelector("body").style.backgroundColor = `#22b14c`;
+  document.querySelector(`.tengu-img`).src = `tenguAlt.png`;
+  // Make tengu face different
+  if (cardDrawn == `tengu`) {
+    cardEle.src = `grayTengu.png`;
+    gameLog.value += `You used your Ofuda to escape from the TENGU!\n`;
+    gameLog.value += `You lose no points and can continue your turn!\n`;
+    gameLog.scrollTop = gameLog.scrollHeight;
+  } else if (cardDrawn == `sanmainoOfuda`) {
+    cardEle.src = `grayOnibaba.png`;
+    currentScore += 50;
+    gameLog.value += `You used your Ofuda to escape from ONIBABA! But beware, she might come back!\n`;
+    gameLog.value += `You get the 50 points she stole back, and can continue your turn!\n`;
+    gameLog.scrollTop = gameLog.scrollHeight;
+  }
+  // do stuff
+  // convert the buttons back
+  // turn the screen green
+  // deliver a message in gameLog
+  // deliver a message in the roundmsg
+  // remove the fuda image
+  // revert the fuda bool
+  // ofuda should only be usable for:
+  // onibaba, tengu
+  // set up in cardHandler
+  // if cardDrawn != tengu or onibaba
+  // --> disable ofuda button
+};
 
 // const rollDice = function () {
 //   // 1. Generate roll, add score
@@ -794,3 +850,6 @@ btnLog.addEventListener(`click`, function () {
     btnLog.textContent = `📜 Hide Log`;
   }
 });
+
+btnOfuda0.addEventListener(`click`, ofudaHandler);
+btnOfuda1.addEventListener(`click`, ofudaHandler);
