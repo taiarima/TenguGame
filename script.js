@@ -14,7 +14,7 @@ const btnTurn = document.querySelector(`.btn--turn`);
 const btnLog = document.querySelector(`.btn--log`);
 const currScorePlayer0 = document.getElementById(`current--0`);
 const currScorePlayer1 = document.getElementById(`current--1`);
-const btnAbout = document.querySelector(`.about`); // this isn't a button so it should be renamed
+const btnAbout = document.querySelector(`.about`); // this isn't a button so maybe it should be renamed(?)
 const modalAbout = document.querySelector(`.modal-about`);
 const overlay = document.querySelector(`.overlay`);
 const gameLog = document.querySelector(`.log`);
@@ -22,6 +22,10 @@ const roundMsg0 = document.getElementById(`msg--0`);
 const roundMsg1 = document.getElementById(`msg--1`);
 const btnOfuda0 = document.querySelector(`.ofuda--0`);
 const btnOfuda1 = document.querySelector(`.ofuda--1`);
+const btnCloseModal = document.querySelector(`.close-modal`);
+const btnHowTo = document.querySelector(`.how-to`); // this isn't a button so maybe it should be renamed(?)
+const modalHowTo = document.querySelector(`.modal-how-to`);
+const allModals = document.querySelector(`.modal-window`);
 
 // Variables for card effects
 let tsuruBool = false;
@@ -514,10 +518,6 @@ function cardHandler(cardDrawn) {
       }
 
       case `sanmainoOfuda`: {
-        if (urashimaCounter > 0 || kobutoriCounter > 0) {
-          btnSpell.disabled = true;
-          gameLog.value += `You cannot obtain an ofuda right now because you committed to drawing more cards!\n`;
-        }
         if (onibabaBool[activePlayer] === true) {
           // Give player opportunity to use ofuda
           cardEle.src = deck[shufflerArray[deckIndex]].altSource;
@@ -870,8 +870,14 @@ btnAbout.addEventListener(`click`, function () {
   overlay.classList.remove(`hidden`);
 });
 
+btnHowTo.addEventListener(`click`, function () {
+  modalHowTo.classList.remove(`hidden`);
+  overlay.classList.remove(`hidden`);
+});
+
 const closeModal = function () {
   modalAbout.classList.add(`hidden`);
+  modalHowTo.classList.add(`hidden`);
   overlay.classList.add(`hidden`);
 };
 
@@ -888,3 +894,4 @@ btnLog.addEventListener(`click`, function () {
 
 btnOfuda0.addEventListener(`click`, ofudaHandler);
 btnOfuda1.addEventListener(`click`, ofudaHandler);
+btnCloseModal.addEventListener(`click`, closeModal);

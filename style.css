@@ -194,12 +194,36 @@ main {
   display: none;
 }
 
-.about {
+.top-bar {
   position: absolute;
-  left: 5%;
   top: 3rem;
   color: #ddd;
   cursor: pointer;
+}
+
+.about {
+  left: 70%;
+}
+
+.how-to {
+  left: 5%;
+}
+
+.lore {
+  left: 25%;
+}
+
+.help {
+  right: 5%;
+}
+
+.copyright {
+  position: absolute;
+  bottom: 3rem;
+  right: 5%;
+  color: #ddd;
+  cursor: pointer;
+  font-size: 2rem;
 }
 
 .overlay {
@@ -213,7 +237,7 @@ main {
   z-index: 5;
 }
 
-.modal-about {
+.modal-window {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -277,5 +301,4 @@ main {
   top: 10rem;
   left: 95rem;
   cursor: pointer;
-
 }

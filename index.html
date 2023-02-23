@@ -10,7 +10,10 @@
   <body>
     <!-- <div class="top-bar"></div> -->
     <textarea class="log hidden" readonly></textarea>
-    <h1 class="about">About</h1>
+    <h1 class="about top-bar">About</h1>
+    <h1 class="how-to top-bar">How to play</h1>
+    <h1 class="lore top-bar">Lore</h1>
+    <h1 class="help top-bar">Help</h1>
     <img src="tenguCenter.png" class="tengu-img" />
     <main>
       <img class="ofuda--0 hidden btn" src="ofuda.png" />
@@ -46,24 +49,50 @@
       <button class="btn btn--turn hidden">▶️ Start next turn</button>
     </main>
     <button class="btn btn--log">📜 Show log</button>
-    <div class="modal-about hidden">
+    <div class="modal-window modal-about hidden">
       <button class="close-modal">&times;</button>
-      <h1>About</h1>
+      <h1 style="font-size: 3rem">About</h1>
       <p style="font-size: 2rem">
-        This is a game. Programming by Tai Arima. Art by Sayalee Karkare.
+        Programming by Tai Arima. Art by Sayalee Karkare. Inspired by course
+        content created by Jonas Schmedtmann.
         <br />
-        Copyright © 2023 Tai Arima <br />
+        This game was programmed using JavaScript, HTML, and CSS.
+        <br />
+
+        Copyright © 2023 Tai Arima and Sayalee Karkare <br />
         ALL RIGHTS RESERVED
       </p>
-      <form id="new-game-form">
+      <!-- <form id="new-game-form">
         Player 1 Username: <input type="text" name="username1" /> Player 2
         Username:
         <input type="text" />
         <input type="submit" value="Submit" />
-      </form>
+      </form> -->
+    </div>
+    <div class="overlay hidden"></div>
+    <div class="modal-window modal-how-to hidden">
+      <button class="close-modal">&times;</button>
+      <h1 style="font-size: 3rem">How to play</h1>
+      <p style="font-size: 2rem">
+        TENGU is a competitive game of strategy and chance where two players
+        face-off to see who can earn more points. A player begins their turn by
+        drawing one card. Each card has an associated point value, and may have
+        additional effects, or a spell that the player can use if they wish.
+        Read the cards carefully to make sure you understand each card's effects
+        and spells. After drawing a card, you can decide to draw another card,
+        or "hold". If you decide to "hold", your current score will be added to
+        your total score, and the next player's turn will begin. A player's turn
+        continues until they decide to "hold" or until they draw the TENGU!
+        Beware of the TENGU! If you draw the TENGU card, you lose all points you
+        earned this round and your turn is over. The game continues for five or
+        ten rounds (as determined by user settings), and the player who has the
+        most points after the final round wins! The player who loses suffers the
+        cuse of the TENGU!
+      </p>
     </div>
     <div class="overlay hidden"></div>
     <script src="script.js"></script>
+    <p class="copyright">Copyright Tai Arima ©2023</p>
   </body>
 </html>
 <!-- TENGU is a competitive game of strategy and chance where two players face-off to see who can earn more points. 
