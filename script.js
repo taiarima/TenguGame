@@ -23,9 +23,12 @@ const roundMsg1 = document.getElementById(`msg--1`);
 const btnOfuda0 = document.querySelector(`.ofuda--0`);
 const btnOfuda1 = document.querySelector(`.ofuda--1`);
 const btnCloseModal = document.querySelector(`.close-modal`);
+const closeHowTo = document.querySelector(`.close-modal-how`);
 const btnHowTo = document.querySelector(`.how-to`); // this isn't a button so maybe it should be renamed(?)
 const modalHowTo = document.querySelector(`.modal-how-to`);
 const allModals = document.querySelector(`.modal-window`);
+const btnLore = document.querySelector(`.lore`);
+const btnHelp = document.querySelector(`.help`);
 
 // Variables for card effects
 let tsuruBool = false;
@@ -875,6 +878,16 @@ btnHowTo.addEventListener(`click`, function () {
   overlay.classList.remove(`hidden`);
 });
 
+btnHelp.addEventListener(`click`, function () {
+  modalHowTo.classList.remove(`hidden`);
+  overlay.classList.remove(`hidden`);
+});
+
+btnLore.addEventListener(`click`, function () {
+  modalHowTo.classList.remove(`hidden`);
+  overlay.classList.remove(`hidden`);
+});
+
 const closeModal = function () {
   modalAbout.classList.add(`hidden`);
   modalHowTo.classList.add(`hidden`);
@@ -895,3 +908,4 @@ btnLog.addEventListener(`click`, function () {
 btnOfuda0.addEventListener(`click`, ofudaHandler);
 btnOfuda1.addEventListener(`click`, ofudaHandler);
 btnCloseModal.addEventListener(`click`, closeModal);
+closeHowTo.addEventListener(`click`, closeModal);
