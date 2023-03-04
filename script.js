@@ -26,9 +26,11 @@ const btnCloseModal = document.querySelector(`.close-modal`);
 const closeHowTo = document.querySelector(`.close-modal-how`);
 const btnHowTo = document.querySelector(`.how-to`); // this isn't a button so maybe it should be renamed(?)
 const modalHowTo = document.querySelector(`.modal-how-to`);
+const modalLore = document.querySelector(`.modal-lore`);
 const allModals = document.querySelector(`.modal-window`);
 const btnLore = document.querySelector(`.lore`);
 const btnHelp = document.querySelector(`.help`);
+const closeLore = document.querySelector(`.close-lore`);
 
 // Variables for card effects
 let tsuruBool = false;
@@ -764,7 +766,6 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
     }
     case `bunbukuChagama`: {
       if (!bunbukuAltTextBool) {
-        // this is mixed up right now
         gameLog.value += `${
           playerNames[activePlayer]
         } drew ${cardText} and had to pay ${25} points!${suppString} \n`;
@@ -884,13 +885,14 @@ btnHelp.addEventListener(`click`, function () {
 });
 
 btnLore.addEventListener(`click`, function () {
-  modalHowTo.classList.remove(`hidden`);
+  modalLore.classList.remove(`hidden`);
   overlay.classList.remove(`hidden`);
 });
 
 const closeModal = function () {
   modalAbout.classList.add(`hidden`);
   modalHowTo.classList.add(`hidden`);
+  modalLore.classList.add(`hidden`);
   overlay.classList.add(`hidden`);
 };
 
@@ -909,3 +911,4 @@ btnOfuda0.addEventListener(`click`, ofudaHandler);
 btnOfuda1.addEventListener(`click`, ofudaHandler);
 btnCloseModal.addEventListener(`click`, closeModal);
 closeHowTo.addEventListener(`click`, closeModal);
+closeLore.addEventListener(`click`, closeModal);
