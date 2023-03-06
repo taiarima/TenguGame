@@ -49,6 +49,38 @@
       <button class="btn btn--turn hidden">▶️ Start next turn</button>
     </main>
     <button class="btn btn--log">📜 Show log</button>
+    <div class="modal-window modal-new"> <!-- removed hidden--> 
+      <button class="close-modal close-new">&times;</button>
+      <h1 style="font-size: 3rem; text-align: center">New Game</h1>
+      <p style="font-size: 2rem">
+        <form style="font-size: 2rem">
+          <br>
+        <p><b>Enter player names (optional):</b></p>
+        <br>
+          <label for="player-0-name">Player 1 Name:</label>
+          <input type="text" id="player-0-name" name="player-0-name" placeholder="Player 1">
+          <label for="player-1-name">Player 2 Name:</label>
+          <input type="text" id="player-1-name" name="player-1-name" placeholder="Player 2">
+          <br>
+          <br>
+          <p style="text-align: center;"><b>Pick your game mode:</b></p>
+          <br>
+          <div class="container">
+            <button class="form-button">Rounds</button>
+            <button class="form-button">Points</button>
+          </div>
+          <br>
+          <p style="text-align: center">The game will end after the amount of rounds specified. The player with the most points at the end of the game wins. (Recommendation: 5-10 Rounds)   </p>
+          <input type="submit" value="Submit" class="submit-button">
+        </form>
+      </p>
+      <!-- <form id="new-game-form">
+        Player 1 Username: <input type="text" name="username1" /> Player 2
+        Username:
+        <input type="text" />
+        <input type="submit" value="Submit" />
+      </form> -->
+    </div>
     <div class="modal-window modal-about hidden">
       <button class="close-modal">&times;</button>
       <h1 style="font-size: 3rem">About</h1>

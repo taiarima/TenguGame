@@ -33,6 +33,8 @@ const btnLore = document.querySelector(`.lore`);
 const btnHelp = document.querySelector(`.help`);
 const closeLore = document.querySelector(`.close-lore`);
 const closeHelp = document.querySelector(`.close-help`);
+const modalNew = document.querySelector(`.modal-new`);
+const closeNew = document.querySelector(`.close-new`);
 
 // Variables for card effects
 let tsuruBool = false;
@@ -854,7 +856,11 @@ const ofudaHandler = function () {
 
 // Event Listeners
 
-btnNew.addEventListener(`click`, newGame);
+// btnNew.addEventListener(`click`, newGame); // TODO -- Currently reworking function of this button
+btnNew.addEventListener(`click`, function () {
+  modalNew.classList.remove(`hidden`);
+  overlay.classList.remove(`hidden`);
+});
 
 btnDraw.addEventListener(`click`, drawCard);
 
@@ -896,6 +902,7 @@ const closeModal = function () {
   modalHowTo.classList.add(`hidden`);
   modalLore.classList.add(`hidden`);
   modalHelp.classList.add(`hidden`);
+  modalNew.classList.add(`hidden`);
   overlay.classList.add(`hidden`);
 };
 
@@ -916,3 +923,4 @@ btnCloseModal.addEventListener(`click`, closeModal);
 closeHowTo.addEventListener(`click`, closeModal);
 closeLore.addEventListener(`click`, closeModal);
 closeHelp.addEventListener(`click`, closeModal);
+closeNew.addEventListener(`click`, closeModal);

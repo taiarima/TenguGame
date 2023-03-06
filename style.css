@@ -304,3 +304,32 @@ main {
   left: 95rem;
   cursor: pointer;
 }
+
+.submit-button {
+  /* align to the right */
+  float: right;
+  /* add some margin */
+  font-family: "Rockwell";
+  padding: 10px;
+}
+
+.form-button {
+  width: 25%;
+  height: 50px;
+  border: none;
+  background-color: #333;
+  color: white;
+  font-family: "Rockwell";
+}
+
+.form-button-clicked {
+  background-color: blue;
+  border: 2px solid black;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
