@@ -323,7 +323,7 @@ main {
 }
 
 .form-button-clicked {
-  background-color: blue;
+  background-color: rgb(149, 48, 171);
   border: 2px solid black;
 }
 

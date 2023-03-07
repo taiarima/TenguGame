@@ -35,6 +35,11 @@ const closeLore = document.querySelector(`.close-lore`);
 const closeHelp = document.querySelector(`.close-help`);
 const modalNew = document.querySelector(`.modal-new`);
 const closeNew = document.querySelector(`.close-new`);
+const btnRounds = document.querySelector(`.btn--rounds`);
+const btnPoints = document.querySelector(`.btn--points`);
+const roundRulesMsg = document.querySelector(`.rounds-rules-msg`);
+const pointsRulesMsg = document.querySelector(`.points-rules-msg`);
+const btnSubmitNewGame = document.querySelector(`.submit-button`);
 
 // Variables for card effects
 let tsuruBool = false;
@@ -924,3 +929,23 @@ closeHowTo.addEventListener(`click`, closeModal);
 closeLore.addEventListener(`click`, closeModal);
 closeHelp.addEventListener(`click`, closeModal);
 closeNew.addEventListener(`click`, closeModal);
+
+btnRounds.addEventListener(`click`, function () {
+  btnRounds.classList.add(`form-button-clicked`);
+  btnPoints.classList.remove(`form-button-clicked`);
+  roundRulesMsg.classList.remove(`hidden`);
+  pointsRulesMsg.classList.add(`hidden`);
+});
+
+btnPoints.addEventListener(`click`, function () {
+  btnPoints.classList.add(`form-button-clicked`);
+  btnRounds.classList.remove(`form-button-clicked`);
+  pointsRulesMsg.classList.remove(`hidden`);
+  roundRulesMsg.classList.add(`hidden`);
+});
+
+btnSubmitNewGame.addEventListener(`click`, function () {
+  document.getElementById(`name--0`).textContent = `something`;
+  closeModal();
+  newGame();
+});

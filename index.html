@@ -49,7 +49,7 @@
       <button class="btn btn--turn hidden">▶️ Start next turn</button>
     </main>
     <button class="btn btn--log">📜 Show log</button>
-    <div class="modal-window modal-new"> <!-- removed hidden--> 
+    <div class="modal-window modal-new hidden"> <!-- removed hidden--> 
       <button class="close-modal close-new">&times;</button>
       <h1 style="font-size: 3rem; text-align: center">New Game</h1>
       <p style="font-size: 2rem">
@@ -66,12 +66,24 @@
           <p style="text-align: center;"><b>Pick your game mode:</b></p>
           <br>
           <div class="container">
-            <button class="form-button">Rounds</button>
-            <button class="form-button">Points</button>
+            <button type="button" class="form-button btn--rounds">Rounds</button>
+            <button type="button" class="form-button btn--points">Points</button>
           </div>
           <br>
-          <p style="text-align: center">The game will end after the amount of rounds specified. The player with the most points at the end of the game wins. (Recommendation: 5-10 Rounds)   </p>
-          <input type="submit" value="Submit" class="submit-button">
+          <div class="rounds-rules-msg hidden" style="text-align: center">
+            Rounds to play: <input type="number" placeholder="1-99">
+            <br>
+            <br>
+            <p >The game will end after the amount of rounds specified. The player with the most points at the end of the game wins. (Recommendation: 5-10 Rounds)   </p>
+          </div>
+          <div class="points-rules-msg hidden" style="text-align: center;">
+            Points to win: <input type="number" placeholder="1000">
+            <br>
+            <br>
+            <p>The first player to reach the specified amount of points wins!</p>
+          </div>
+          <br>  
+          <button type="button" class="submit-button">Submit</button>
         </form>
       </p>
       <!-- <form id="new-game-form">
