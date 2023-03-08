@@ -221,6 +221,13 @@ cardEle.classList.add(`hidden`);
 score1Ele.textContent = 0;
 score0Ele.textContent = 0;
 
+// Game end conditions
+let roundsRulesBool = false;
+let pointsRulesBool = false;
+let pointsToWin = 1000;
+let roundsToEnd = 5;
+let roundsCounter = 1;
+
 const newGame = function () {
   btnNew.classList.toggle(`hidden`);
   btnTurn.classList.toggle(`hidden`); // this is silly but it should work for now
@@ -359,10 +366,20 @@ function endTurn() {
   document.getElementById(`current--${activePlayer}`).textContent =
     currentScore;
 
-  // End game condition. Experimental TODO
-  if (totalScores[activePlayer] >= winningScore) {
-    endGame();
-    return; // Function should not proceed further if endGame function has been invoked
+  // End game conditions
+  if (pointsRulesBool) {
+    if (totalScores[activePlayer] >= pointsToWin) {
+      endGame();
+      return; // Function should not proceed further if endGame function has been invoked
+    }
+  } else if (roundsRulesBool) {
+    if (activePlayer == 1) {
+      roundsCounter++;
+    }
+    if (roundsCounter > roundsToEnd) {
+      endGame();
+      return;
+    }
   }
 
   // Switch player
@@ -380,6 +397,12 @@ function endTurn() {
 }
 
 function endGame() {
+  // This is a silly way to do this, but it makes it so I don't have to reprogram everything for adding rounds rules
+  // It just switches the active player to whoever has more points
+  if (roundsRulesBool) {
+    activePlayer = totalScores[0] > totalScores[1] ? 0 : 1;
+  }
+
   opponent = activePlayer == 0 ? 1 : 0;
 
   // Add winning visual effects
@@ -935,6 +958,8 @@ btnRounds.addEventListener(`click`, function () {
   btnPoints.classList.remove(`form-button-clicked`);
   roundRulesMsg.classList.remove(`hidden`);
   pointsRulesMsg.classList.add(`hidden`);
+  roundsRulesBool = true;
+  pointsRulesBool = false;
 });
 
 btnPoints.addEventListener(`click`, function () {
@@ -942,10 +967,39 @@ btnPoints.addEventListener(`click`, function () {
   btnRounds.classList.remove(`form-button-clicked`);
   pointsRulesMsg.classList.remove(`hidden`);
   roundRulesMsg.classList.add(`hidden`);
+  pointsRulesBool = true;
+  roundsRulesBool = false;
 });
 
 btnSubmitNewGame.addEventListener(`click`, function () {
-  document.getElementById(`name--0`).textContent = `something`;
+  player1Name = document.getElementById(`player-0-name`).value;
+  player2Name = document.getElementById(`player-1-name`).value;
+
+  if (player1Name == ``) {
+    player1Name = `Player 1`;
+  } else if (player1Name.length > 12) {
+    // do something
+  }
+  playerNames[0] = player1Name;
+
+  if (player2Name == ``) {
+    player2Name = `Player 2`;
+  } else if (player2Name.length > 12) {
+    // do something
+  }
+
+  playerNames[1] = player2Name;
+
+  document.getElementById(`name--0`).textContent = player1Name;
+  document.getElementById(`name--1`).textContent = player2Name;
+
+  if (pointsRulesBool) {
+    pointsToWin = document.getElementById(`points-input`).value;
+  } else if (roundsRulesBool) {
+    roundsToEnd = document.getElementById(`rounds-input`).value;
+  }
+
+  //add validation to make sure user names are valid TODO
   closeModal();
   newGame();
 });

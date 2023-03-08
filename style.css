@@ -333,3 +333,7 @@ main {
   align-items: center;
   gap: 10px;
 }
+
+.total-score-label {
+  font-size: 3rem;
+}

@@ -18,7 +18,8 @@
     <main>
       <img class="ofuda--0 hidden btn" src="ofuda.png" />
       <section class="player player--0 player--active">
-        <h2 class="name" id="name--0">Player 1 <br />Total Score:</h2>
+        <h2 class="name" id="name--0">Player 1</h2>
+        <br /><h2 class="total-score-label">Total Score:</h2>
         <p class="score" id="score--0">0</p>
         <p class="round-msg hidden" id="msg--0">Player 1 wins!</p>
         <div class="current">
@@ -28,9 +29,10 @@
       </section>
       <section class="player player--1">
         <h2 class="name" id="name--1">
-          Player 2 <br />
-          Total Score:
+          Player 2 
         </h2>
+        <br />
+         <h2 class="total-score-label">Total Score:</h2> 
         <p class="score" id="score--1">0</p>
         <p class="round-msg hidden" id="msg--1">Player 2 wins!</p>
         <div class="current">
@@ -71,13 +73,13 @@
           </div>
           <br>
           <div class="rounds-rules-msg hidden" style="text-align: center">
-            Rounds to play: <input type="number" placeholder="1-99">
+            Rounds to play: <input type="number" id="rounds-input" placeholder="1-99">
             <br>
             <br>
             <p >The game will end after the amount of rounds specified. The player with the most points at the end of the game wins. (Recommendation: 5-10 Rounds)   </p>
           </div>
           <div class="points-rules-msg hidden" style="text-align: center;">
-            Points to win: <input type="number" placeholder="1000">
+            Points to win: <input type="number" id="points-input" placeholder="1000">
             <br>
             <br>
             <p>The first player to reach the specified amount of points wins!</p>
