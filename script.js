@@ -232,11 +232,13 @@ const newGame = function () {
   btnNew.classList.toggle(`hidden`);
   btnTurn.classList.toggle(`hidden`); // this is silly but it should work for now
   btnSpell.classList.toggle(`hidden`);
-  document
-    .querySelector(`.player--${activePlayer}`)
-    .classList.remove(`player--winner`);
+  document.querySelector(`.player--0`).classList.remove(`player--winner`);
+  document.querySelector(`.player--1`).classList.remove(`player--winner`);
+  document.querySelector(`.player--0`).classList.remove(`player--loser`);
+  document.querySelector(`.player--1`).classList.remove(`player--loser`);
   document.querySelector(`.player--0`).classList.add(`player--active`); // change this later
   activePlayer = 0;
+  roundsCounter = 1;
 
   // Set scores back to zero
   score0Ele.textContent = 0;
@@ -373,13 +375,16 @@ function endTurn() {
       return; // Function should not proceed further if endGame function has been invoked
     }
   } else if (roundsRulesBool) {
-    if (activePlayer == 1) {
-      roundsCounter++;
-    }
     if (roundsCounter > roundsToEnd) {
+      console.log(`entering rounds rules end condition`);
       endGame();
       return;
     }
+  }
+
+  // Rounds Counter
+  if (activePlayer == 1) {
+    roundsCounter++;
   }
 
   // Switch player
@@ -397,6 +402,7 @@ function endTurn() {
 }
 
 function endGame() {
+  console.log(`entering end game function`);
   // This is a silly way to do this, but it makes it so I don't have to reprogram everything for adding rounds rules
   // It just switches the active player to whoever has more points
   if (roundsRulesBool) {
@@ -409,9 +415,8 @@ function endGame() {
   document
     .querySelector(`.player--${activePlayer}`)
     .classList.add(`player--winner`);
-  document
-    .querySelector(`.player--${activePlayer}`)
-    .classList.remove(`player--active`);
+
+  document.querySelector(`.player--${opponent}`).classList.add(`player--loser`);
 
   // Hide buttons
   btnHold.classList.add(`hidden`);
@@ -422,11 +427,13 @@ function endGame() {
   // Show winning messages
   document.getElementById(
     `msg--${activePlayer}`
-  ).textContent += `\n ${playerNames[activePlayer]} wins!`;
+  ).textContent += `\n${playerNames[activePlayer]} wins!`;
+  console.log(playerNames[activePlayer]);
   document.getElementById(
     `msg--${opponent}`
   ).textContent = `${playerNames[opponent]} suffers the curse of \n the TENGU!`;
-  document.getElementById(`msg--${opponent}`).classList.remove(`hidden`);
+  document.getElementById(`msg--0`).classList.remove(`hidden`);
+  document.getElementById(`msg--1`).classList.remove(`hidden`);
 
   gameLog.value += `\n${playerNames[activePlayer]} has won! \n${playerNames[opponent]} has lost, and suffers the curse of the TENGU!\n`;
   gameLog.value += `Press "New Game" to play again! But beware of the TENGU! \n`;
@@ -434,6 +441,16 @@ function endGame() {
 }
 
 function newTurn() {
+  if (activePlayer == 0) {
+    if (roundsRulesBool && roundsCounter == roundsToEnd) {
+      gameLog.value += `\nFINAL ROUND!`;
+    } else {
+      gameLog.value += `\nRound ${roundsCounter}!`;
+    }
+    gameLog.scrollTop = gameLog.scrollHeight;
+    newRoundAnimation();
+  }
+
   document.querySelector(`.tengu-img`).src = `tenguCenter.png`;
   gameLog.value += `\n>>> Begin ${playerNames[activePlayer]}'s turn!! >>>> \n`;
   gameLog.scrollTop = gameLog.scrollHeight;
@@ -492,6 +509,23 @@ function newTurn() {
     document.getElementById(`current--${activePlayer}`).textContent =
       currentScore;
   }
+}
+
+function newRoundAnimation() {
+  let roundAnimationText = document.querySelector(`.rounds-animation`);
+  roundAnimationText.classList.remove(`hidden`);
+  roundAnimationText.style.animation = `none`;
+  if (roundsRulesBool && roundsCounter == roundsToEnd) {
+    roundAnimationText.textContent = `FINAL ROUND`;
+  } else {
+    roundAnimationText.textContent = `ROUND ${roundsCounter}`;
+  }
+  setTimeout(function () {
+    roundAnimationText.style.animation = ``;
+  }, 10);
+  setTimeout(function () {
+    roundAnimationText.classList.add(`hidden`);
+  }, 3000);
 }
 
 function cardHandler(cardDrawn) {
