@@ -368,6 +368,11 @@ function endTurn() {
   document.getElementById(`current--${activePlayer}`).textContent =
     currentScore;
 
+  // Rounds Counter
+  if (activePlayer == 1) {
+    roundsCounter++;
+  }
+
   // End game conditions
   if (pointsRulesBool) {
     if (totalScores[activePlayer] >= pointsToWin) {
@@ -376,15 +381,9 @@ function endTurn() {
     }
   } else if (roundsRulesBool) {
     if (roundsCounter > roundsToEnd) {
-      console.log(`entering rounds rules end condition`);
       endGame();
       return;
     }
-  }
-
-  // Rounds Counter
-  if (activePlayer == 1) {
-    roundsCounter++;
   }
 
   // Switch player
@@ -402,7 +401,6 @@ function endTurn() {
 }
 
 function endGame() {
-  console.log(`entering end game function`);
   // This is a silly way to do this, but it makes it so I don't have to reprogram everything for adding rounds rules
   // It just switches the active player to whoever has more points
   if (roundsRulesBool) {
@@ -1029,11 +1027,17 @@ btnSubmitNewGame.addEventListener(`click`, function () {
 
   if (pointsRulesBool) {
     pointsToWin = document.getElementById(`points-input`).value;
+    // maybe set a default here in case they didn't input anything
   } else if (roundsRulesBool) {
     roundsToEnd = document.getElementById(`rounds-input`).value;
+    // same for this, maybe add a default in case nothing was input
   }
 
   //add validation to make sure user names are valid TODO
   closeModal();
   newGame();
+
+  // Remove these so that when users start a new game neither will be highlighted
+  btnRounds.classList.remove(`form-button-clicked`);
+  btnPoints.classList.remove(`form-button-clicked`);
 });
