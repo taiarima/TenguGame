@@ -24,7 +24,7 @@ body {
 }
 
 /* LAYOUT */
-main {
+/* main {
   position: relative;
   width: 100rem;
   height: 60rem;
@@ -33,6 +33,19 @@ main {
   filter: blur();
   box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.25);
   border-radius: 9px;
+  overflow: hidden;
+  display: flex;
+} */
+
+main {
+  position: relative;
+  width: 50%;
+  height: 70%;
+  background-color: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(200px);
+  filter: blur();
+  box-shadow: 0.5em 1em 2em rgba(0, 0, 0, 0.25);
+  border-radius: 0.5em;
   overflow: hidden;
   display: flex;
 }
@@ -47,11 +60,35 @@ main {
 }
 
 /* ELEMENTS */
-.name {
+/* .name {
   position: relative;
   font-size: 4rem;
   letter-spacing: 1px;
   word-spacing: 2px;
+  font-weight: 300;
+  margin-bottom: 1rem;
+} */
+/* .name {
+  position: relative;
+  font-size: 4rem;
+  letter-spacing: 0.05em;
+  word-spacing: 0.1em;
+  font-weight: 300;
+}
+
+@media only screen and (max-width: 600px) {
+  .name {
+    font-size: 2rem;
+    letter-spacing: 0.03em;
+    word-spacing: 0.06em;
+  }
+} */
+
+.name {
+  position: relative;
+  font-size: 4rem;
+  letter-spacing: 0.05em;
+  word-spacing: 0.1em;
   font-weight: 300;
   margin-bottom: 1rem;
 }
@@ -203,6 +240,7 @@ main {
   top: 3rem;
   color: #ddd;
   cursor: pointer;
+  font-size: 350%;
 }
 
 .about {

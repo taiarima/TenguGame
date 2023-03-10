@@ -1,7 +1,9 @@
 `use strict`;
 
 // TODO TENGU OFUDA BUG, game log not displaying correctly, can't end turn after using ofuda
-// active player style messing up after starting new game
+// TODO -- make it so if player uses Ikkyuu-san spell and then gets TENGU, they should end round with -50 points
+//^^ add a penalty score variable, have it calculate all the negatives, then add this if they draw tengu
+//TODO -- make it so Momotarou adds 30 points if score is less than or equal to 0
 
 // Selecting elements
 const player0Ele = document.querySelector(`.player--0`);
@@ -240,6 +242,7 @@ const newGame = function () {
   document.querySelector(`.player--0`).classList.remove(`player--loser`);
   document.querySelector(`.player--1`).classList.remove(`player--loser`);
   document.querySelector(`.player--0`).classList.add(`player--active`); // change this later
+  document.querySelector(`.player--1`).classList.remove(`player--active`);
   activePlayer = 0;
   roundsCounter = 1;
 
@@ -1050,4 +1053,6 @@ btnSubmitNewGame.addEventListener(`click`, function () {
   // Remove these so that when users start a new game neither will be highlighted
   btnRounds.classList.remove(`form-button-clicked`);
   btnPoints.classList.remove(`form-button-clicked`);
+  pointsRulesMsg.classList.add(`hidden`);
+  roundRulesMsg.classList.add(`hidden`);
 });
