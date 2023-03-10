@@ -1,5 +1,8 @@
 `use strict`;
 
+// TODO TENGU OFUDA BUG, game log not displaying correctly, can't end turn after using ofuda
+// active player style messing up after starting new game
+
 // Selecting elements
 const player0Ele = document.querySelector(`.player--0`);
 const player1Ele = document.querySelector(`.player--1`);
@@ -381,8 +384,12 @@ function endTurn() {
     }
   } else if (roundsRulesBool) {
     if (roundsCounter > roundsToEnd) {
-      endGame();
-      return;
+      if (totalScores[0] != totalScores[1] && activePlayer == 1) {
+        endGame();
+        return;
+      }
+      // if there is a tie in a rounds rules game, the game will go into a "sudden death" mode, an extra round will be added
+      // and the game will continue until there is no longer a tie at the end of the round
     }
   }
 
@@ -440,13 +447,15 @@ function endGame() {
 
 function newTurn() {
   if (activePlayer == 0) {
+    let roundsText = `Round ${roundsCounter}`;
     if (roundsRulesBool && roundsCounter == roundsToEnd) {
-      gameLog.value += `\nFINAL ROUND!`;
-    } else {
-      gameLog.value += `\nRound ${roundsCounter}!`;
+      roundsText = `FINAL ROUND!`;
+    } else if (roundsRulesBool && roundsCounter > roundsToEnd) {
+      roundsText = `SUDDEN DEATH!`;
     }
+    gameLog.value += `\n${roundsText}`;
     gameLog.scrollTop = gameLog.scrollHeight;
-    newRoundAnimation();
+    newRoundAnimation(roundsText);
   }
 
   document.querySelector(`.tengu-img`).src = `tenguCenter.png`;
@@ -509,15 +518,16 @@ function newTurn() {
   }
 }
 
-function newRoundAnimation() {
+function newRoundAnimation(roundText) {
   let roundAnimationText = document.querySelector(`.rounds-animation`);
   roundAnimationText.classList.remove(`hidden`);
   roundAnimationText.style.animation = `none`;
-  if (roundsRulesBool && roundsCounter == roundsToEnd) {
-    roundAnimationText.textContent = `FINAL ROUND`;
-  } else {
-    roundAnimationText.textContent = `ROUND ${roundsCounter}`;
-  }
+  // if (roundsRulesBool && roundsCounter == roundsToEnd) {
+  //   roundAnimationText.textContent = `FINAL ROUND`;
+  // } else {
+  //   roundAnimationText.textContent = `ROUND ${roundsCounter}`;
+  // }
+  roundAnimationText.textContent = roundText;
   setTimeout(function () {
     roundAnimationText.style.animation = ``;
   }, 10);
