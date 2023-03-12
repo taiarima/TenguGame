@@ -333,17 +333,17 @@ main {
 
 .ofuda--0 {
   height: 10rem;
-  position: absolute;
-  top: 10rem;
+  position: relative;
+  top: 15%;
   cursor: pointer;
-  left: 5rem;
+  left: 5%;
 }
 
 .ofuda--1 {
   height: 10rem;
   position: absolute;
-  top: 10rem;
-  left: 95rem;
+  top: 15%;
+  left: 95%;
   cursor: pointer;
 }
 

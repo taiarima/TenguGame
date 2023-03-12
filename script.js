@@ -1,9 +1,7 @@
 `use strict`;
 
 // TODO TENGU OFUDA BUG, game log not displaying correctly, can't end turn after using ofuda
-// TODO -- make it so if player uses Ikkyuu-san spell and then gets TENGU, they should end round with -50 points
-//^^ add a penalty score variable, have it calculate all the negatives, then add this if they draw tengu
-//TODO -- make it so Momotarou adds 30 points if score is less than or equal to 0
+// couldn't replicate the bug, but it must still be there somewhere
 
 // Selecting elements
 const player0Ele = document.querySelector(`.player--0`);
@@ -225,6 +223,7 @@ playerNames.push(player2Name);
 cardEle.classList.add(`hidden`);
 score1Ele.textContent = 0;
 score0Ele.textContent = 0;
+let penaltyScore = 0;
 
 // Game end conditions
 let roundsRulesBool = false;
@@ -519,6 +518,8 @@ function newTurn() {
     document.getElementById(`current--${activePlayer}`).textContent =
       currentScore;
   }
+
+  penaltyScore = 0;
 }
 
 function newRoundAnimation(roundText) {
@@ -595,6 +596,7 @@ function cardHandler(cardDrawn) {
           bunbukuAltTextBool = false;
           cardEle.src = deck[shufflerArray[deckIndex]].altSource;
           currentScore += deck[shufflerArray[deckIndex]].altPoints;
+          penaltyScore += deck[shufflerArray[deckIndex]].altPoints;
         }
         break;
       }
@@ -604,6 +606,7 @@ function cardHandler(cardDrawn) {
           // Give player opportunity to use ofuda
           cardEle.src = deck[shufflerArray[deckIndex]].altSource;
           currentScore += deck[shufflerArray[deckIndex]].altPoints;
+          penaltyScore += deck[shufflerArray[deckIndex]].altPoints;
           // disable spell button
           btnSpell.disabled = true;
           btnSpell.textContent = `🈚 No spell`;
@@ -668,10 +671,12 @@ function cardHandler(cardDrawn) {
     case `momotarou`: {
       if (currentScore > 0) {
         currentScore *= 3;
+        suppString += `Momotarou triples your current score!`;
       } else {
         currentScore = 0;
+        suppString += `Momotarou got rid of all your negative points!`;
       }
-      suppString += `Momotarou triples your current score!`;
+
       break;
     }
 
@@ -721,6 +726,7 @@ function cardHandler(cardDrawn) {
 function tenguEffect() {
   if (currentScore > 0) {
     currentScore = 0;
+    currentScore -= penaltyScore;
   }
   document.querySelector("body").style.backgroundColor = `crimson`;
   let suppString = `Your turn is over! \n`;
@@ -796,6 +802,7 @@ function useSpell() {
 
     case `ikkyuu`: {
       currentScore -= 75;
+      penaltyScore -= 75;
       document.getElementById(`current--${activePlayer}`).textContent =
         currentScore;
       let nextCard = deck[shufflerArray[deckIndex]].cardText;
