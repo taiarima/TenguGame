@@ -3,6 +3,8 @@
 // TODO TENGU OFUDA BUG, game log not displaying correctly, can't end turn after using ofuda
 // couldn't replicate the bug, but it must still be there somewhere
 
+// TODO ofuda button needs to be disabled during opponents turn
+
 // Selecting elements
 const player0Ele = document.querySelector(`.player--0`);
 const player1Ele = document.querySelector(`.player--1`);
@@ -395,6 +397,7 @@ function endTurn() {
     }
   }
 
+  document.querySelector(`.ofuda--${activePlayer}`).disabled = true;
   // Switch player
   activePlayer = activePlayer === 0 ? 1 : 0;
   player0Ele.classList.toggle(`player--active`);
