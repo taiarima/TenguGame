@@ -347,6 +347,13 @@ main {
   cursor: pointer;
 }
 
+.disabled-ofuda {
+  cursor: not-allowed;
+  border: 1px solid #999999;
+  background-color: #282727;
+  color: #666666;
+}
+
 .submit-button {
   /* align to the right */
   float: right;

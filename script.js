@@ -397,11 +397,20 @@ function endTurn() {
     }
   }
 
-  document.querySelector(`.ofuda--${activePlayer}`).disabled = true;
+  // Disabling Ofuda button for player ending turn
+  document
+    .querySelector(`.ofuda--${activePlayer}`)
+    .classList.add(`disabled-ofuda`);
+
   // Switch player
   activePlayer = activePlayer === 0 ? 1 : 0;
   player0Ele.classList.toggle(`player--active`);
   player1Ele.classList.toggle(`player--active`);
+
+  //Enabling Ofuda for player starting turn
+  document
+    .querySelector(`.ofuda--${activePlayer}`)
+    .classList.remove(`disabled-ofuda`);
 
   // Hide all buttons
   btnDraw.classList.toggle(`hidden`);
@@ -891,7 +900,12 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
   }
 }
 
-const ofudaHandler = function () {
+const ofudaHandler = function (player) {
+  if (player != activePlayer) {
+    gameLog.value += `You cannot use your Ofuda because it's not your turn!\n`;
+    gameLog.scrollTop = gameLog.scrollHeight;
+    return;
+  }
   let cardDrawn = deck[shufflerArray[deckIndex - 1]].cardId;
   if (cardDrawn != `tengu` && cardDrawn != `sanmainoOfuda`) {
     gameLog.value += `You cannot use your Ofuda against this card!\n`;
@@ -1000,8 +1014,8 @@ btnLog.addEventListener(`click`, function () {
   }
 });
 
-btnOfuda0.addEventListener(`click`, ofudaHandler);
-btnOfuda1.addEventListener(`click`, ofudaHandler);
+btnOfuda0.addEventListener(`click`, ofudaHandler(0));
+btnOfuda1.addEventListener(`click`, ofudaHandler(1));
 btnCloseModal.addEventListener(`click`, closeModal);
 closeHowTo.addEventListener(`click`, closeModal);
 closeLore.addEventListener(`click`, closeModal);
