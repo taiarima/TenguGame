@@ -3,10 +3,6 @@
 // TODO TENGU OFUDA BUG, game log not displaying correctly, can't end turn after using ofuda
 // couldn't replicate the bug, but it must still be there somewhere
 
-// BUG: got rewarded 25 points when drawing tengu  --> improper handling of penalty points with bunbuku chagama
-
-// Add to gameplay the rules and conditions for winning at the beginning
-
 // Selecting elements
 const player0Ele = document.querySelector(`.player--0`);
 const player1Ele = document.querySelector(`.player--1`);
@@ -60,7 +56,7 @@ let kintarouBool = false;
 let kasajizouBool = [false, false];
 let kaniRevengeTracker = [0, 0]; // this is a multiplier, the number in the opponent's index indicates how many times they have monkey attacked
 const monkeyAttackPts = 100;
-const kanjiRevengePts = -300; // this isn't coded in
+const kanjiRevengePts = 300;
 let bunbukuAltTextBool = false;
 let fudaAltTextBool = false;
 let ikkyuuBool = false;
@@ -236,6 +232,58 @@ let pointsToWin = 1000;
 let roundsToEnd = 5;
 let roundsCounter = 1;
 
+function initGameRules() {
+  player1Name = document.getElementById(`player-0-name`).value;
+  player2Name = document.getElementById(`player-1-name`).value;
+
+  if (player1Name == ``) {
+    player1Name = `Player 1`;
+  } else if (player1Name.length > 12) {
+    // do something
+  }
+  playerNames[0] = player1Name;
+
+  if (player2Name == ``) {
+    player2Name = `Player 2`;
+  } else if (player2Name.length > 12) {
+    // do something
+  }
+
+  playerNames[1] = player2Name;
+
+  document.getElementById(`name--0`).textContent = player1Name;
+  document.getElementById(`name--1`).textContent = player2Name;
+
+  if (pointsRulesBool) {
+    pointsToWin = document.getElementById(`points-input`).value;
+    if (pointsToWin < 500 || pointsToWin > 1000000) {
+      alert(`\nYou must select a point value between 500 and 1,000,000!\n\n`);
+      return;
+    }
+  } else if (roundsRulesBool) {
+    roundsToEnd = document.getElementById(`rounds-input`).value;
+    if (roundsToEnd < 1 || roundsToEnd > 100) {
+      alert(`\nYou must select an amount of rounds between 1 and 100!\n\n`);
+      return;
+    }
+  } else {
+    console.log(roundsRulesBool);
+    // The user has not selected which rules they want to play with
+    alert(`\nYou must select which game mode you wish to play with!\n\n\n`);
+    return;
+  }
+
+  //add validation to make sure user names are valid TODO
+  closeModal();
+  newGame();
+
+  // Remove these so that when users start a new game neither will be highlighted
+  btnRounds.classList.remove(`form-button-clicked`);
+  btnPoints.classList.remove(`form-button-clicked`);
+  pointsRulesMsg.classList.add(`hidden`);
+  roundRulesMsg.classList.add(`hidden`);
+}
+
 const newGame = function () {
   btnNew.classList.toggle(`hidden`);
   btnTurn.classList.toggle(`hidden`); // this is silly but it should work for now
@@ -262,7 +310,7 @@ const newGame = function () {
   omusubiBool = false;
   issunBool = false;
   urashimaCounter = 0;
-  warashibeCounter = [1, 1];
+  // warashibeCounter = [1, 1]; experimenting with removing this
   kintarouBool = false;
   kasajizouBool = [false, false];
   kaniRevengeTracker = [0, 0];
@@ -273,6 +321,12 @@ const newGame = function () {
 
   // Clear log
   gameLog.value = ``;
+  if (pointsRulesBool) {
+    gameLog.value += `You are playing a game with points rules. The first person to reach ${pointsToWin} will win the game!\n`;
+  } else {
+    gameLog.value += `You are playing a game with rounds rules. The game will end after ${roundsToEnd} turns.   If there is a tie at the end of ${roundsToEnd} rounds, then sudden death rounds will be added until there is no longer a tie.\n`;
+  }
+
   newTurn();
 };
 
@@ -716,7 +770,7 @@ function cardHandler(cardDrawn) {
     case `warashibe`: {
       // deck index of warashibe is 11, maybe make this code more intelligent later
       currentScore -= deck[11].points;
-      currentScore += deck[11].points * warashibeCounter[activePlayer];
+      currentScore += deck[11].points * roundsCounter;
       warashibeCounter[activePlayer] *= 2;
       break;
     }
@@ -740,7 +794,7 @@ function cardHandler(cardDrawn) {
 function tenguEffect() {
   if (currentScore > 0) {
     currentScore = 0;
-    currentScore -= penaltyScore;
+    currentScore += penaltyScore;
   }
   document.querySelector("body").style.backgroundColor = `crimson`;
   let suppString = `Your turn is over! \n`;
@@ -1053,42 +1107,43 @@ btnPoints.addEventListener(`click`, function () {
 });
 
 btnSubmitNewGame.addEventListener(`click`, function () {
-  player1Name = document.getElementById(`player-0-name`).value;
-  player2Name = document.getElementById(`player-1-name`).value;
+  initGameRules();
+  // player1Name = document.getElementById(`player-0-name`).value;
+  // player2Name = document.getElementById(`player-1-name`).value;
 
-  if (player1Name == ``) {
-    player1Name = `Player 1`;
-  } else if (player1Name.length > 12) {
-    // do something
-  }
-  playerNames[0] = player1Name;
+  // if (player1Name == ``) {
+  //   player1Name = `Player 1`;
+  // } else if (player1Name.length > 12) {
+  //   // do something
+  // }
+  // playerNames[0] = player1Name;
 
-  if (player2Name == ``) {
-    player2Name = `Player 2`;
-  } else if (player2Name.length > 12) {
-    // do something
-  }
+  // if (player2Name == ``) {
+  //   player2Name = `Player 2`;
+  // } else if (player2Name.length > 12) {
+  //   // do something
+  // }
 
-  playerNames[1] = player2Name;
+  // playerNames[1] = player2Name;
 
-  document.getElementById(`name--0`).textContent = player1Name;
-  document.getElementById(`name--1`).textContent = player2Name;
+  // document.getElementById(`name--0`).textContent = player1Name;
+  // document.getElementById(`name--1`).textContent = player2Name;
 
-  if (pointsRulesBool) {
-    pointsToWin = document.getElementById(`points-input`).value;
-    // maybe set a default here in case they didn't input anything
-  } else if (roundsRulesBool) {
-    roundsToEnd = document.getElementById(`rounds-input`).value;
-    // same for this, maybe add a default in case nothing was input
-  }
+  // if (pointsRulesBool) {
+  //   pointsToWin = document.getElementById(`points-input`).value;
+  //   // maybe set a default here in case they didn't input anything
+  // } else if (roundsRulesBool) {
+  //   roundsToEnd = document.getElementById(`rounds-input`).value;
+  //   // same for this, maybe add a default in case nothing was input
+  // }
 
-  //add validation to make sure user names are valid TODO
-  closeModal();
-  newGame();
+  // //add validation to make sure user names are valid TODO
+  // closeModal();
+  // newGame();
 
-  // Remove these so that when users start a new game neither will be highlighted
-  btnRounds.classList.remove(`form-button-clicked`);
-  btnPoints.classList.remove(`form-button-clicked`);
-  pointsRulesMsg.classList.add(`hidden`);
-  roundRulesMsg.classList.add(`hidden`);
+  // // Remove these so that when users start a new game neither will be highlighted
+  // btnRounds.classList.remove(`form-button-clicked`);
+  // btnPoints.classList.remove(`form-button-clicked`);
+  // pointsRulesMsg.classList.add(`hidden`);
+  // roundRulesMsg.classList.add(`hidden`);
 });
