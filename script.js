@@ -3,7 +3,9 @@
 // TODO TENGU OFUDA BUG, game log not displaying correctly, can't end turn after using ofuda
 // couldn't replicate the bug, but it must still be there somewhere
 
-// TODO ofuda button needs to be disabled during opponents turn
+// BUG: got rewarded 25 points when drawing tengu  --> improper handling of penalty points with bunbuku chagama
+
+// Add to gameplay the rules and conditions for winning at the beginning
 
 // Selecting elements
 const player0Ele = document.querySelector(`.player--0`);
@@ -407,11 +409,6 @@ function endTurn() {
   player0Ele.classList.toggle(`player--active`);
   player1Ele.classList.toggle(`player--active`);
 
-  //Enabling Ofuda for player starting turn
-  document
-    .querySelector(`.ofuda--${activePlayer}`)
-    .classList.remove(`disabled-ofuda`);
-
   // Hide all buttons
   btnDraw.classList.toggle(`hidden`);
   btnSpell.classList.toggle(`hidden`);
@@ -471,6 +468,11 @@ function newTurn() {
     gameLog.scrollTop = gameLog.scrollHeight;
     newRoundAnimation(roundsText);
   }
+
+  //Enabling Ofuda for player starting turn
+  document
+    .querySelector(`.ofuda--${activePlayer}`)
+    .classList.remove(`disabled-ofuda`);
 
   document.querySelector(`.tengu-img`).src = `tenguCenter.png`;
   gameLog.value += `\n>>> Begin ${playerNames[activePlayer]}'s turn!! >>>> \n`;
@@ -790,6 +792,10 @@ function useSpell() {
       btnDraw.disabled = true;
       btnHold.disabled = false;
       btnHold.textContent = `⏹️ End turn`;
+      // Disabling Ofuda button after they receive it
+      document
+        .querySelector(`.ofuda--${activePlayer}`)
+        .classList.add(`disabled-ofuda`);
       break;
     }
 
@@ -900,12 +906,18 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
   }
 }
 
-const ofudaHandler = function (player) {
-  if (player != activePlayer) {
+const ofudaHandler = function () {
+  // If condition to make sure only the user whose turn it is can use their ofuda
+  if (
+    document
+      .querySelector(`.ofuda--${activePlayer}`)
+      .classList.contains(`disabled-ofuda`)
+  ) {
     gameLog.value += `You cannot use your Ofuda because it's not your turn!\n`;
     gameLog.scrollTop = gameLog.scrollHeight;
     return;
   }
+
   let cardDrawn = deck[shufflerArray[deckIndex - 1]].cardId;
   if (cardDrawn != `tengu` && cardDrawn != `sanmainoOfuda`) {
     gameLog.value += `You cannot use your Ofuda against this card!\n`;
@@ -1014,8 +1026,8 @@ btnLog.addEventListener(`click`, function () {
   }
 });
 
-btnOfuda0.addEventListener(`click`, ofudaHandler(0));
-btnOfuda1.addEventListener(`click`, ofudaHandler(1));
+btnOfuda0.addEventListener(`click`, ofudaHandler);
+btnOfuda1.addEventListener(`click`, ofudaHandler);
 btnCloseModal.addEventListener(`click`, closeModal);
 closeHowTo.addEventListener(`click`, closeModal);
 closeLore.addEventListener(`click`, closeModal);

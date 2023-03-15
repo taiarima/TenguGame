@@ -48,6 +48,9 @@ main {
   border-radius: 0.5em;
   overflow: hidden;
   display: flex;
+  /* flex-direction: column;
+  justify-content: center;
+  align-items: center; */
 }
 
 .player {
@@ -86,7 +89,7 @@ main {
 
 .name {
   position: relative;
-  font-size: 4rem;
+  font-size: 2.5vw;
   letter-spacing: 0.05em;
   word-spacing: 0.1em;
   font-weight: 300;
@@ -94,7 +97,7 @@ main {
 }
 
 .score {
-  font-size: 8rem;
+  font-size: calc(3vw + 3vh);
   font-weight: 300;
   color: #000000;
   margin-bottom: auto;
@@ -117,22 +120,24 @@ main {
 .current {
   background-color: #1a701e;
   opacity: 0.8;
-  border-radius: 9px;
+  border-radius: 10%;
   color: #fff;
   width: 65%;
   padding: 2rem;
+  height: 39%;
   text-align: center;
   transition: all 0.75s;
+  box-sizing: border-box;
 }
 
 .current-label {
   margin-bottom: 1rem;
-  font-size: 1.7rem;
+  font-size: calc(0.8vw + 0.8vh);
   color: #ddd;
 }
 
 .current-score {
-  font-size: 3.5rem;
+  font-size: calc(2vw + 2vh);
 }
 
 /* ABSOLUTE POSITIONED ELEMENTS */
@@ -144,10 +149,11 @@ main {
   background: none;
   border: none;
   font-family: inherit;
-  font-size: 1.8rem;
+  font-size: 1vw;
   cursor: pointer;
   font-weight: 400;
   transition: all 0.2s;
+  height: 7%;
 
   background-color: white;
   background-color: rgba(255, 255, 255, 0.6);
@@ -158,29 +164,29 @@ main {
   box-shadow: 0 1.75rem 3.5rem rgba(0, 0, 0, 0.1);
 }
 
-.btn::first-letter {
+/* .btn::first-letter {
   font-size: 2.4rem;
   display: inline-block;
   margin-right: 0.7rem;
-}
+} */
 
 .btn--new {
-  top: 2rem;
+  top: 3%;
 }
 .btn--draw {
-  top: 45rem;
+  top: 80%;
 }
 .btn--hold {
-  top: 52rem;
+  top: 90%;
 }
 .btn--turn {
-  top: 52rem;
+  top: 90%;
 }
 .btn--spell {
-  top: 2rem;
+  top: 3%;
 }
 .btn--log {
-  bottom: 5rem;
+  bottom: 5%;
 }
 
 .btn:active {
@@ -200,12 +206,11 @@ main {
 }
 
 .card {
-  /* This class will be renamed to card later */
   position: absolute;
   left: 50%;
   top: 8.5rem;
   transform: translateX(-50%);
-  height: 35rem;
+  height: 55%;
   box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.2);
 }
 
@@ -312,14 +317,14 @@ main {
   color: white;
   position: absolute;
   left: 10rem;
-  height: 60rem;
-  width: 30rem;
+  height: 70%;
+  width: 17%;
   font-size: 14pt;
 }
 
 .tengu-img {
   position: absolute;
-  height: 10rem;
+  height: 10%;
   top: 2rem;
 }
 
