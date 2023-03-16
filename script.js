@@ -64,6 +64,7 @@ let kamotoriCounter = 0;
 let kamotoriBool = false;
 let kobutoriCounter = 0;
 let tenguBool = false;
+let warashibeMultiplier = 1;
 
 // Deck of card objects
 const deck = [
@@ -273,7 +274,6 @@ function initGameRules() {
     return;
   }
 
-  //add validation to make sure user names are valid TODO
   closeModal();
   newGame();
 
@@ -714,6 +714,7 @@ function cardHandler(cardDrawn) {
       // give player opportunity to use ofuda if available
       if (ofudaBool[activePlayer]) {
         btnDraw.disabled = true;
+        btnHold.disabled = false;
         btnHold.textContent = `👺 ACCEPT YOUR FATE`;
         tenguBool = true;
         // change hold buutton to "Accept fate"
@@ -770,8 +771,9 @@ function cardHandler(cardDrawn) {
     case `warashibe`: {
       // deck index of warashibe is 11, maybe make this code more intelligent later
       currentScore -= deck[11].points;
-      currentScore += deck[11].points * roundsCounter;
-      warashibeCounter[activePlayer] *= 2;
+      warashibeMultiplier = roundsCounter > 5 ? roundsCounter : 5;
+      currentScore += deck[11].points ** warashibeMultiplier;
+      // warashibeCounter[activePlayer] *= 2;
       break;
     }
 
@@ -936,7 +938,7 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
       gameLog.value += `${
         playerNames[activePlayer]
       } has drawn ${cardText} and earned +${
-        points * (warashibeCounter[activePlayer] / 2)
+        points ** warashibeMultiplier
       } points! \n`; // Warashibe counter needs to be decremented by one since it is incremented after points calculated
       gameLog.scrollTop = gameLog.scrollHeight;
       break;
@@ -991,6 +993,7 @@ const ofudaHandler = function () {
     tenguBool = false;
     btnHold.textContent = `⏹️ End turn`;
   } else if (cardDrawn == `sanmainoOfuda`) {
+    penaltyScore += 100;
     cardEle.src = `grayOnibaba.png`;
     currentScore += Math.abs(deck[7].altPoints);
     document.getElementById(`current--${activePlayer}`).textContent =
@@ -1039,7 +1042,6 @@ btnTurn.addEventListener(`click`, function () {
   newTurn();
 });
 
-// TODO Under construction
 btnAbout.addEventListener(`click`, function () {
   modalAbout.classList.remove(`hidden`);
   overlay.classList.remove(`hidden`);
@@ -1108,42 +1110,4 @@ btnPoints.addEventListener(`click`, function () {
 
 btnSubmitNewGame.addEventListener(`click`, function () {
   initGameRules();
-  // player1Name = document.getElementById(`player-0-name`).value;
-  // player2Name = document.getElementById(`player-1-name`).value;
-
-  // if (player1Name == ``) {
-  //   player1Name = `Player 1`;
-  // } else if (player1Name.length > 12) {
-  //   // do something
-  // }
-  // playerNames[0] = player1Name;
-
-  // if (player2Name == ``) {
-  //   player2Name = `Player 2`;
-  // } else if (player2Name.length > 12) {
-  //   // do something
-  // }
-
-  // playerNames[1] = player2Name;
-
-  // document.getElementById(`name--0`).textContent = player1Name;
-  // document.getElementById(`name--1`).textContent = player2Name;
-
-  // if (pointsRulesBool) {
-  //   pointsToWin = document.getElementById(`points-input`).value;
-  //   // maybe set a default here in case they didn't input anything
-  // } else if (roundsRulesBool) {
-  //   roundsToEnd = document.getElementById(`rounds-input`).value;
-  //   // same for this, maybe add a default in case nothing was input
-  // }
-
-  // //add validation to make sure user names are valid TODO
-  // closeModal();
-  // newGame();
-
-  // // Remove these so that when users start a new game neither will be highlighted
-  // btnRounds.classList.remove(`form-button-clicked`);
-  // btnPoints.classList.remove(`form-button-clicked`);
-  // pointsRulesMsg.classList.add(`hidden`);
-  // roundRulesMsg.classList.add(`hidden`);
 });
