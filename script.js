@@ -1,8 +1,5 @@
 `use strict`;
 
-// TODO TENGU OFUDA BUG, game log not displaying correctly, can't end turn after using ofuda
-// couldn't replicate the bug, but it must still be there somewhere
-
 // Selecting elements
 const player0Ele = document.querySelector(`.player--0`);
 const player1Ele = document.querySelector(`.player--1`);
@@ -1111,3 +1108,85 @@ btnPoints.addEventListener(`click`, function () {
 btnSubmitNewGame.addEventListener(`click`, function () {
   initGameRules();
 });
+
+
+
+// // Experimental code below:
+// const btnLocal = document.querySelector('.btn--local');
+// const btnOnline = document.querySelector('.btn--online');
+// const onlineOptions = document.querySelector('.online-options');
+
+// btnLocal.addEventListener('click', function () {
+//   // Show the regular game options
+//   onlineOptions.classList.add('hidden');
+// });
+
+// btnOnline.addEventListener('click', function () {
+//   // Show the online game options
+//   onlineOptions.classList.remove('hidden');
+// });
+// const btnCreate = document.querySelector('.btn--create');
+// const btnJoin = document.querySelector('.btn--join');
+
+// btnCreate.addEventListener('click', function () {
+//   // Generate a random game ID and display it
+//   const gameId = Math.random().toString(36).substr(2, 9);
+//   const link = `https://example.com/game/${gameId}`;
+//   const linkText = `Send this link to your opponent: <a href="${link}">${link}</a>`;
+//   const waitingText = 'Waiting for opponent...';
+//   document.querySelector('.modal-new p').innerHTML = `${linkText}<br>${waitingText}`;
+// });
+
+// btnJoin.addEventListener('click', function () {
+//   // TODO: Handle joining a game
+// });
+
+
+
+// function initGameRules() {
+//   player1Name = document.getElementById(`player-0-name`).value;
+//   player2Name = document.getElementById(`player-1-name`).value;
+
+//   if (player1Name == ``) {
+//     player1Name = `Player 1`;
+//   } else if (player1Name.length > 
+
+// function initGameRules() {
+//   player1Name = document.getElementById(`player-0-name`).value;
+//   player2Name = document.getElementById(`player-1-name`).value;
+
+//   if (player1Name == ``) {
+//     player1Name = `Player 1`;
+//   } else if (player1Name.length > 12) {
+//     // do something
+//   }
+//   playerNames[0] = player1Name;
+
+//   if (player2Name == ``) {
+//     player2Name = `Player 2`;
+//   } else if (player2Name.length > 12) {
+//     // do something
+//   }
+
+//   playerNames[1] = player2Name;
+
+//   if (onlineOptions.classList.contains('hidden')) {
+//     // Continue with local game behavior
+//     // ...
+//   }
+// }
+
+// btnCreateGame.addEventListener('click', function () {
+//   const gameId = generateGameId();
+//   const gameLink = window.location.origin + '/game?id=' + gameId;
+//   alert('Send this link to your opponent: ' + gameLink);
+//   waitingForOpponent.classList.remove('hidden');
+// });
+
+// btnJoinGame.addEventListener('click', function () {
+//   const gameId = prompt('Enter the game ID:');
+//   if (gameId) {
+//   const gameLink = window.location.origin + '/game?id=' + gameId;
+//   window.location.href = gameLink;
+//   }
+//   });
