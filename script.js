@@ -1,5 +1,7 @@
 `use strict`;
 
+// TODO: Modal close button doens't work for about
+
 // Selecting elements
 const player0Ele = document.querySelector(`.player--0`);
 const player1Ele = document.querySelector(`.player--1`);
@@ -67,8 +69,8 @@ let warashibeMultiplier = 1;
 const deck = [
   {
     cardId: `saruKani`,
-    source: `01 Monkey-Crab Quarrel Monkey Attack.png`,
-    altSource: `01-2 Monkey-Crab Quarrel Crab Revenge.png`,
+    source: `saya monkeyattack with text.png`,
+    altSource: `saya kanirevenge.jpg  `,
     points: 15,
     spell: true,
     cardText: `Monkey-Crab Quarrel`,
@@ -124,7 +126,7 @@ const deck = [
   {
     cardId: `sanmainoOfuda`,
     source: `08-1 Sanmai no Ofuda.png`,
-    altSource: `08-2 Onibaba.png`,
+    altSource: `saya onibaba.jpg`,
     points: 15,
     altPoints: -100,
     spell: true,
@@ -328,6 +330,7 @@ const newGame = function () {
 };
 
 const drawCard = function () {
+  // Set Tengu and background back to default settings
   document.querySelector(`.tengu-img`).src = `tenguCenter.png`;
   document.querySelector("body").style.backgroundColor = `#242624`;
   btnHold.disabled = false;
@@ -573,7 +576,7 @@ function newTurn() {
 
   // Show card back at new turn
   cardEle.classList.remove(`hidden`);
-  cardEle.src = `cardBack.png`;
+  cardEle.src = `card back green conversion.png`;
 
   // Kasajizou Spell effect, maybe change later TODO
   if (kasajizouBool[activePlayer]) {
@@ -766,6 +769,7 @@ function cardHandler(cardDrawn) {
     }
 
     case `warashibe`: {
+      // TODO: Something is wrong with the points for this card !!! BUG !!!
       // deck index of warashibe is 11, maybe make this code more intelligent later
       currentScore -= deck[11].points;
       warashibeMultiplier = roundsCounter > 5 ? roundsCounter : 5;
@@ -1109,8 +1113,6 @@ btnSubmitNewGame.addEventListener(`click`, function () {
   initGameRules();
 });
 
-
-
 // // Experimental code below:
 // const btnLocal = document.querySelector('.btn--local');
 // const btnOnline = document.querySelector('.btn--online');
@@ -1141,15 +1143,13 @@ btnSubmitNewGame.addEventListener(`click`, function () {
 //   // TODO: Handle joining a game
 // });
 
-
-
 // function initGameRules() {
 //   player1Name = document.getElementById(`player-0-name`).value;
 //   player2Name = document.getElementById(`player-1-name`).value;
 
 //   if (player1Name == ``) {
 //     player1Name = `Player 1`;
-//   } else if (player1Name.length > 
+//   } else if (player1Name.length >
 
 // function initGameRules() {
 //   player1Name = document.getElementById(`player-0-name`).value;

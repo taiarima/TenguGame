@@ -212,6 +212,7 @@ main {
   transform: translateX(-50%);
   height: 55%;
   box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.2);
+  border-radius: 25px;
 }
 
 /* .dice {  // This will be the code I use later for programming dice rolls to see who goes first
