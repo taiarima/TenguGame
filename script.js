@@ -56,6 +56,7 @@ let kasajizouBool = [false, false];
 let kaniRevengeTracker = [0, 0]; // this is a multiplier, the number in the opponent's index indicates how many times they have monkey attacked
 const monkeyAttackPts = 100;
 const kanjiRevengePts = 300;
+const tsuruBonus = 50;
 let bunbukuAltTextBool = false;
 let fudaAltTextBool = false;
 let ikkyuuBool = false;
@@ -109,7 +110,7 @@ const deck = [
   },
   {
     cardId: `tsurunoOngaeshi`,
-    source: `06 Tsuru no ongaeshi.png`,
+    source: `saya tsuru with text.png`,
     altSource: null,
     points: 15,
     spell: false,
@@ -373,8 +374,8 @@ const drawCard = function () {
 function endTurn() {
   // Player gets extra points if ended turn with tsuru no ongaesi
   if (tsuruBool) {
-    currentScore += 40;
-    gameLog.value += `${playerNames[activePlayer]} received an extra 40 points from the Tsuru no Ongaeshi bonus! \n`;
+    currentScore += tsuruBonus;
+    gameLog.value += `${playerNames[activePlayer]} received an extra ${tsuruBonus} points from the Tsuru no Ongaeshi bonus! \n`;
     gameLog.scrollTop = gameLog.scrollHeight;
     tsuruBool = false;
   }
@@ -773,7 +774,7 @@ function cardHandler(cardDrawn) {
       // deck index of warashibe is 11, maybe make this code more intelligent later
       currentScore -= deck[11].points;
       warashibeMultiplier = roundsCounter > 5 ? roundsCounter : 5;
-      currentScore += deck[11].points ** warashibeMultiplier;
+      currentScore += deck[11].points * warashibeMultiplier;
       // warashibeCounter[activePlayer] *= 2;
       break;
     }
@@ -939,7 +940,7 @@ function logTextHandler(cardDrawn, cardText, points, suppString) {
       gameLog.value += `${
         playerNames[activePlayer]
       } has drawn ${cardText} and earned +${
-        points ** warashibeMultiplier
+        points * warashibeMultiplier
       } points! \n`; // Warashibe counter needs to be decremented by one since it is incremented after points calculated
       gameLog.scrollTop = gameLog.scrollHeight;
       break;
@@ -1190,3 +1191,18 @@ btnSubmitNewGame.addEventListener(`click`, function () {
 //   window.location.href = gameLink;
 //   }
 //   });
+
+// Experimenting
+
+(function () {
+  var customAlert = document.getElementById("custom-alert");
+  var closeButton = document.getElementById("custom-alert-close");
+
+  closeButton.addEventListener("click", function () {
+    customAlert.style.display = "none";
+  });
+
+  window.addEventListener("load", function () {
+    customAlert.style.display = "block";
+  });
+})();
