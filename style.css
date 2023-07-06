@@ -1,41 +1,62 @@
-@import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: inherit;
-}
-
-html {
-  font-size: 62.5%;
-  box-sizing: border-box;
+:root {
+  --color-gray: #333333;
+  --color-dark-gray: #242624;
+  --color-beige: #b4957e;
+  --color-red: #db324d;
+  --color-beige-highlight: #dcb9a0;
+  --color-blue: #5c5cda;
+  --color-yellow: #f2c14e;
+  --color-green: #5fad56;
+  --color-purple: #9530ab;
 }
 
 body {
   font-family: "Rockwell";
-  font-weight: 400;
-  height: 100vh;
-  color: #333;
-  /* background-image: linear-gradient(to top left, #70c319 0%, #045702 100%); */
-  background: #242624;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: var(--color-dark-gray);
 }
 
-/* LAYOUT */
-/* main {
+nav {
   position: relative;
-  width: 100rem;
-  height: 60rem;
-  background-color: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(200px);
-  filter: blur();
-  box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.25);
-  border-radius: 9px;
-  overflow: hidden;
   display: flex;
-} */
+  justify-content: space-between;
+  width: 100%;
+}
+
+.top-bar {
+  color: #ddd;
+  cursor: pointer;
+  font-size: 350%;
+  margin: 0 50px;
+}
+
+.tengu-img {
+  height: 100px;
+  justify-self: center;
+}
+
+.hamburger-button {
+  position: absolute;
+  right: 0;
+  height: 50px;
+  width: 50px;
+  filter: invert(100%);
+  margin: 10px;
+  display: none;
+}
+
+@media screen and (max-width: 1090px) {
+  nav {
+    justify-content: center;
+  }
+
+  .top-bar {
+    display: none;
+  }
+
+  .hamburger-button {
+    display: block;
+  }
+}
 
 main {
   position: relative;
@@ -48,9 +69,6 @@ main {
   border-radius: 0.5em;
   overflow: hidden;
   display: flex;
-  /* flex-direction: column;
-  justify-content: center;
-  align-items: center; */
 }
 
 .player {
@@ -241,36 +259,12 @@ main {
   display: none;
 }
 
-.top-bar {
-  position: absolute;
-  top: 3rem;
-  color: #ddd;
-  cursor: pointer;
-  font-size: 350%;
-}
-
-.about {
-  left: 70%;
-}
-
-.how-to {
-  left: 5%;
-}
-
-.lore {
-  left: 25%;
-}
-
-.help {
-  right: 5%;
-}
-
 .copyright {
   position: absolute;
-  bottom: 3rem;
+  bottom: 0.5rem;
   right: 5%;
   color: #ddd;
-  font-size: 2rem;
+  font-size: 1rem;
 }
 
 .overlay {
@@ -297,7 +291,7 @@ main {
   box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.3);
   z-index: 10;
 
-  max-height: calc(100vh - 210px);
+  /* max-height: calc(100vh - 210px); */
   overflow-y: auto;
 }
 
@@ -321,12 +315,6 @@ main {
   height: 70%;
   width: 17%;
   font-size: 14pt;
-}
-
-.tengu-img {
-  position: absolute;
-  height: 10%;
-  top: 2rem;
 }
 
 .round-msg {
@@ -378,7 +366,7 @@ main {
 }
 
 .form-button-clicked {
-  background-color: rgb(149, 48, 171);
+  background-color: #9530ab;
   border: 2px solid black;
 }
 
