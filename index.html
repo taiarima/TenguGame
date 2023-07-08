@@ -9,73 +9,98 @@
   </head>
   <body>
     <nav>
-      <h1 class="about top-bar">About</h1>
-      <h1 class="how-to top-bar">Rules</h1>
+      <div class="left">
+        <h1 class="about top-bar">About</h1>
+        <h1 class="how-to top-bar">Rules</h1>
+      </div>
       <img src="tenguCenter.png" class="tengu-img" />
-      <h1 class="lore top-bar">Lore</h1>
-      <h1 class="help top-bar">Help</h1>
-      <img class="hamburger-button" src="hamburgerButtonImg.png"/>
+      <div class="right">
+        <h1 class="lore top-bar">Lore</h1>
+        <h1 class="help top-bar">Help</h1>
+      </div>
+      <img class="hamburger-button" src="hamburgerButtonImg.png" />
     </nav>
     <textarea class="log hidden" readonly></textarea>
     <main>
       <div class="rounds-animation hidden">Round 1</div>
-      <img class="ofuda--0 hidden btn" id="ofuda--0"  src="ofuda.png" />
+      <img class="ofuda--0 hidden btn" id="ofuda--0" src="ofuda.png" />
       <section class="play-area">
-        <div class="active-player-area">
-          <div class="active-p-score"></div>
-          <div class="card-area"></div>
+        <div class="player-area active-player-area">
+          <div class="active-p-score">
+            <span class="player-name">Player 1</span>
+            <span class="current-round-points">Round Points: 10</span>
+            <span class="total-score">Total Score: 100</span>
+          </div>
         </div>
-        <div class="waiting-player-area">
-          <div class="waiting-p-score"></div>
+        <div class="card-area">
+          <img src="card_assets/wiki commons card back.png" class="play-card" />
+        </div>
+        <div class="player-area waiting-player-area">
+          <div class="waiting-p-score">Player 2</div>
         </div>
       </section>
       <img class="ofuda--1 hidden btn" id="ofuda--1" src="ofuda.png" />
-      <img src="cardBack.png" alt="Magical cards" class="card" />
-      <button class="btn btn--new">🆕 New game</button>
+      <!-- <img src="cardBack.png" alt="Magical cards" class="card" /> -->
+      <!-- <button class="btn btn--new">🆕 New game</button>
       <button class="btn btn--spell hidden">🔮 Use Spell</button>
       <button class="btn btn--draw hidden">🀄 Draw Card</button>
       <button class="btn btn--hold hidden">⏹️ Hold</button>
-      <button class="btn btn--turn hidden">▶️ Start next turn</button>
+      <button class="btn btn--turn hidden">▶️ Start next turn</button> -->
     </main>
     <!-- <button class="btn btn--log">📜 Show log</button> -->
-    <div class="modal-window modal-new hidden"> 
-      <button class="close-modal close-new">&times;</button>  
+    <div class="modal-window modal-new hidden">
+      <button class="close-modal close-new">&times;</button>
       <h1 style="font-size: 3rem; text-align: center">New Game</h1>
 
-      <p style="font-size: 2rem">
-        <form style="font-size: 2rem">
-          <br>
+      <p style="font-size: 2rem"></p>
+      <form style="font-size: 2rem">
+        <br />
         <p><b>Enter player names (optional):</b></p>
-        <br>
-          <label for="player-0-name">Player 1 Name:</label>
-          <input type="text" id="player-0-name" name="player-0-name" placeholder="Player 1">
-          <label for="player-1-name">Player 2 Name:</label>
-          <input type="text" id="player-1-name" name="player-1-name" placeholder="Player 2">
-          <br>
-          <br>
-          <p style="text-align: center;"><b>Pick your game mode:</b></p>
-          <br>
-          <div class="container">
-            <button type="button" class="form-button btn--rounds">Rounds</button>
-            <button type="button" class="form-button btn--points">Points</button>
-          </div>
-          <br>
-          <div class="rounds-rules-msg hidden" style="text-align: center">
-            Rounds to play: <input type="number" id="rounds-input" placeholder="1-99">
-            <br>
-            <br>
-            <p >The game will end after the amount of rounds specified. The player with the most points at the end of the game wins. (Recommendation: 5-10 Rounds)   </p>
-          </div>
-          <div class="points-rules-msg hidden" style="text-align: center;">
-            Points to win: <input type="number" id="points-input" placeholder="1000">
-            <br>
-            <br>
-            <p>The first player to reach the specified amount of points wins!</p>
-          </div>
-          <br>  
-          <button type="button" class="submit-button">Submit</button>
-        </form>
-      </p>
+        <br />
+        <label for="player-0-name">Player 1 Name:</label>
+        <input
+          type="text"
+          id="player-0-name"
+          name="player-0-name"
+          placeholder="Player 1"
+        />
+        <label for="player-1-name">Player 2 Name:</label>
+        <input
+          type="text"
+          id="player-1-name"
+          name="player-1-name"
+          placeholder="Player 2"
+        />
+        <br />
+        <br />
+        <p style="text-align: center"><b>Pick your game mode:</b></p>
+        <br />
+        <div class="container">
+          <button type="button" class="form-button btn--rounds">Rounds</button>
+          <button type="button" class="form-button btn--points">Points</button>
+        </div>
+        <br />
+        <div class="rounds-rules-msg hidden" style="text-align: center">
+          Rounds to play:
+          <input type="number" id="rounds-input" placeholder="1-99" />
+          <br />
+          <br />
+          <p>
+            The game will end after the amount of rounds specified. The player
+            with the most points at the end of the game wins. (Recommendation:
+            5-10 Rounds)
+          </p>
+        </div>
+        <div class="points-rules-msg hidden" style="text-align: center">
+          Points to win:
+          <input type="number" id="points-input" placeholder="1000" />
+          <br />
+          <br />
+          <p>The first player to reach the specified amount of points wins!</p>
+        </div>
+        <br />
+        <button type="button" class="submit-button">Submit</button>
+      </form>
     </div>
     <div class="modal-window modal-about hidden">
       <button class="close-modal">&times;</button>
@@ -105,9 +130,9 @@
         your total score, and the next player's turn will begin. A player's turn
         continues until they decide to "hold" or until they draw the TENGU!
         Beware of the TENGU! If you draw the TENGU card, you lose all points you
-        earned this round and your turn is over. You can choose how many rounds 
-        you wish to play or an amount of points the game will be played to. The 
-        player with the most points at the end of the game wins! The player who 
+        earned this round and your turn is over. You can choose how many rounds
+        you wish to play or an amount of points the game will be played to. The
+        player with the most points at the end of the game wins! The player who
         loses suffers the curse of the TENGU!
       </p>
     </div>
@@ -234,20 +259,23 @@
     <div id="custom-alert" class="custom-alert">
       <div class="custom-alert-content">
         <h1>Disclaimer</h1>
-        <p>This site is still under construction. Currently screen resolutions less than 1500px wide are not fully supported. Click the button below to acknowledge that you are accessing pre-release content.</p>
-        <button id="custom-alert-close" class="custom-alert-close">Yes, I understand</button>
+        <p>
+          This site is still under construction. Currently screen resolutions
+          less than 1500px wide are not fully supported. Click the button below
+          to acknowledge that you are accessing pre-release content.
+        </p>
+        <button id="custom-alert-close" class="custom-alert-close">
+          Yes, I understand
+        </button>
       </div>
     </div>
     <div class="overlay hidden"></div>
     <script src="script.js"></script>
-    
-    
   </body>
   <footer>
     <p class="copyright">Copyright Tai Arima ©2023</p>
   </footer>
 </html>
-
 
 <!-- Try adding this content later:
 <p style="text-align: center;"><b>Choose your game mode:</b></p>

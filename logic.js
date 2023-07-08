@@ -1,3 +1,5 @@
+"use strict";
+
 function initGameRules() {
   player1Name = document.getElementById(`player-0-name`).value;
   player2Name = document.getElementById(`player-1-name`).value;

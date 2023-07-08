@@ -1,6 +1,5 @@
 `use strict`;
 
-
 // Selecting elements
 const player0Ele = document.querySelector(`.player--0`);
 const player1Ele = document.querySelector(`.player--1`);
@@ -1025,7 +1024,6 @@ const ofudaHandler = function () {
 
 // btnNew.addEventListener(`click`, newGame); // TODO -- Currently reworking function of this button
 
-
 btnNew.addEventListener(`click`, function () {
   modalNew.classList.remove(`hidden`);
   overlay.classList.remove(`hidden`);
@@ -1197,18 +1195,3 @@ btnSubmitNewGame.addEventListener(`click`, function () {
 //   window.location.href = gameLink;
 //   }
 //   });
-
-// Experimenting
-
-(function () {
-  var customAlert = document.getElementById("custom-alert");
-  var closeButton = document.getElementById("custom-alert-close");
-
-  closeButton.addEventListener("click", function () {
-    customAlert.style.display = "none";
-  });
-
-  window.addEventListener("load", function () {
-    customAlert.style.display = "block";
-  });
-})();
