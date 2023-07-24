@@ -75,7 +75,7 @@ main {
   /* background-color: rgba(255, 255, 255, 0.35); */
   backdrop-filter: blur(200px);
   filter: blur();
-  box-shadow: 0.5em 1em 2em rgba(0, 0, 0, 0.25);
+  /* box-shadow: 0.5em 1em 2em rgba(0, 0, 0, 0.25); */
   border-radius: 0.5em;
   overflow: hidden;
   display: flex;
@@ -86,9 +86,16 @@ main {
 .play-area {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap; /* Allows items to wrap to the next line on smaller screens */
+  /* flex-wrap: wrap; Allows items to wrap to the next line on smaller screens */
   width: 100%;
-  /* background-color: lightgray; */
+  margin: 0 300px;
+}
+
+/* CSS for larger screens */
+@media (max-width: 1400px) {
+  .play-area {
+    margin: 0;
+  }
 }
 
 .player-area {
@@ -98,6 +105,8 @@ main {
   align-items: center;
   background-color: #ccc;
   border-radius: 15%;
+  margin: 0 50px;
+  border: 5px solid var(--color-red);
 }
 
 .card-area {
@@ -125,28 +134,39 @@ main {
   .play-area {
     flex-direction: column; /* Vertically align the player areas and card area */
   }
+
+  .player-area {
+    margin: 0;
+  }
   .active-player-area {
     width: 100%;
-    border-top-left-radius: 100%;
+    border-radius: 0;
+    margin: 5px 0;
+    /* border-top-left-radius: 100%;
     border-top-right-radius: 100%;
     border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    height: 150px;
+    border-bottom-right-radius: 0; */
+    height: 225px;
   }
   /* For the waiting player, flip the hemisphere to the bottom */
   .waiting-player-area {
-    border-top-left-radius: 0;
+    width: 100%;
+    border-radius: 0;
+    /* border-top-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-left-radius: 50%;
-    border-bottom-right-radius: 50%;
-    height: 150px;
+    border-bottom-right-radius: 50%; */
+    height: 225px;
   }
 }
 
-.active-p-score {
+.active-p-score,
+.waiting-p-score {
   display: flex;
   flex-direction: column;
   text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 .player {
@@ -157,31 +177,6 @@ main {
   align-items: center;
   transition: all 0.75s;
 }
-
-/* ELEMENTS */
-/* .name {
-  position: relative;
-  font-size: 4rem;
-  letter-spacing: 1px;
-  word-spacing: 2px;
-  font-weight: 300;
-  margin-bottom: 1rem;
-} */
-/* .name {
-  position: relative;
-  font-size: 4rem;
-  letter-spacing: 0.05em;
-  word-spacing: 0.1em;
-  font-weight: 300;
-}
-
-@media only screen and (max-width: 600px) {
-  .name {
-    font-size: 2rem;
-    letter-spacing: 0.03em;
-    word-spacing: 0.06em;
-  }
-} */
 
 .name {
   position: relative;

@@ -216,6 +216,7 @@ const winningScore = 1000;
 let playerNames = [];
 let player1Name = `Player 1`;
 let player2Name = `Player 2`;
+// player names should be max 16 chars !! FIX
 playerNames.push(player1Name);
 playerNames.push(player2Name);
 
