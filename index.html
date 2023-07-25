@@ -21,37 +21,47 @@
       <img class="hamburger-button" src="hamburgerButtonImg.png" />
     </nav>
     <textarea class="log hidden" readonly></textarea>
+    <button class="btn btn--new">🆕 New game</button>
     <main>
       <div class="rounds-animation hidden">Round 1</div>
-      <img class="ofuda--0 hidden btn" id="ofuda--0" src="ofuda.png" />
+      <!-- <img class="ofuda--0 hidden btn" id="ofuda--0" src="ofuda.png" /> -->
       <section class="play-area">
-        <div class="player-area active-player-area">
-          <div class="active-p-score">
-            <span class="player-name">Player 1</span>
-            <span class="current-round-points">Round Points: 10000</span>
-            <span class="total-score">Total Score: 10000</span>
+        <div class="player-area player--0 active-player">
+          <div class="score-card" id="current--0">
+            <span class="player-name" id="name--0">Player 1</span>
+            <span class="current-round-points">
+              Round Points: <span class="round--pts--0">10000</span>
+            </span>
+            <span class="total-score"
+              >Total Score: <span class="total--pts--0">10000</span></span
+            >
           </div>
         </div>
+
         <div class="card-area">
           <img src="card_assets/wiki commons card back.png" class="play-card" />
         </div>
-        <div class="player-area waiting-player-area">
-          <div class="waiting-p-score">
-            <span class="player-name">Player 2</span>
-            <span class="current-round-points">Round Points: 10000</span>
-            <span class="total-score">Total Score: 10000</span>
+
+        <div class="player-area player--1 inactive-player">
+          <div class="score-card" id="current--1">
+            <span class="player-name" id="name--1">Player 2</span>
+            <span class="current-round-points">
+              Round Points: <span class="round--pts--1">10000</span>
+            </span>
+            <span class="total-score"
+              >Total Score: <span class="total--pts--1">10000</span></span
+            >
           </div>
         </div>
       </section>
       <img class="ofuda--1 hidden btn" id="ofuda--1" src="ofuda.png" />
-      <!-- <img src="cardBack.png" alt="Magical cards" class="card" /> -->
-      <!-- <button class="btn btn--new">🆕 New game</button>
-      <button class="btn btn--spell hidden">🔮 Use Spell</button>
+      <!-- <button class="btn btn--new">🆕 New game</button> -->
+      <button class="btn btn--spell hidden">🔮</button>
       <button class="btn btn--draw hidden">🀄 Draw Card</button>
       <button class="btn btn--hold hidden">⏹️ Hold</button>
-      <button class="btn btn--turn hidden">▶️ Start next turn</button> -->
+      <button class="btn btn--turn hidden">▶️ Start next turn</button>
     </main>
-    <!-- <button class="btn btn--log">📜 Show log</button> -->
+    <button class="btn btn--log">📜 Show log</button>
     <div class="modal-window modal-new hidden">
       <button class="close-modal close-new">&times;</button>
       <h1 style="font-size: 3rem; text-align: center">New Game</h1>
@@ -112,7 +122,7 @@
       <p style="font-size: 2rem">
         Programming by Tai Arima. Art by Sayalee Karkare.
         <br />
-        This game was programmed using JavaScript, HTML, and CSS.
+        This game was programmed as an exercise in using Vanilla JavaScript.
         <br />
 
         Copyright © 2023 Tai Arima <br />
@@ -275,6 +285,11 @@
     </div>
     <div class="overlay hidden"></div>
     <!-- <script src="script.js"></script> -->
+    <script src="src/config.js"></script>
+    <script src="src/domSelectors.js"></script>
+    <script src="src/gameVariables.js"></script>
+    <script src="src/gameLogic.js"></script>
+    <script src="src/eventListeners.js"></script>
   </body>
   <footer>
     <p class="copyright">Copyright Tai Arima ©2023</p>

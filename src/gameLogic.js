@@ -47,26 +47,44 @@ function initGameRules() {
   // Remove these so that when users start a new game neither will be highlighted
   btnRounds.classList.remove(`form-button-clicked`);
   btnPoints.classList.remove(`form-button-clicked`);
-  pointsRulesMsg.classList.add(`hidden`);
-  roundRulesMsg.classList.add(`hidden`);
+  pointsRulesMsg.classList.add(HIDDEN);
+  roundRulesMsg.classList.add(HIDDEN);
 }
 
 const newGame = function () {
-  btnNew.classList.toggle(`hidden`);
-  btnTurn.classList.toggle(`hidden`); // this is silly but it should work for now
-  btnSpell.classList.toggle(`hidden`);
-  document.querySelector(`.player--0`).classList.remove(`player--winner`);
-  document.querySelector(`.player--1`).classList.remove(`player--winner`);
-  document.querySelector(`.player--0`).classList.remove(`player--loser`);
-  document.querySelector(`.player--1`).classList.remove(`player--loser`);
-  document.querySelector(`.player--0`).classList.add(`player--active`); // change this later
-  document.querySelector(`.player--1`).classList.remove(`player--active`);
+  resetGUI();
+  resetGameValues();
+
+  if (pointsRulesBool) {
+    gameLog.value += `You are playing a game with points rules. The first person to reach ${pointsToWin} will win the game!\n`;
+  } else {
+    gameLog.value += `You are playing a game with rounds rules. The game will end after ${roundsToEnd} turns.   If there is a tie at the end of ${roundsToEnd} rounds, then sudden death rounds will be added until there is no longer a tie.\n`;
+  }
+
+  newTurn();
+};
+
+function resetGUI() {
+  btnNew.classList.toggle(HIDDEN);
+  btnTurn.classList.toggle(HIDDEN); // this is silly but it should work for now
+  btnSpell.classList.toggle(HIDDEN);
+  document.querySelector(PLAYER_ZERO).classList.remove(PLAYER_WINNER);
+  document.querySelector(PLAYER_ONE).classList.remove(PLAYER_WINNER);
+  document.querySelector(PLAYER_ZERO).classList.remove(PLAYER_LOSER);
+  document.querySelector(PLAYER_ONE).classList.remove(PLAYER_LOSER);
+  document.querySelector(PLAYER_ZERO).classList.add(PLAYER_ACTIVE); // change this later
+  document.querySelector(PLAYER_ONE).classList.remove(PLAYER_ACTIVE);
   activePlayer = 0;
   roundsCounter = 1;
 
+  // Clear log
+  gameLog.value = "";
+}
+
+function resetGameValues() {
   // Set scores back to zero
-  score0Ele.textContent = 0;
-  score1Ele.textContent = 0;
+  // score0Ele.textContent = 0;
+  // score1Ele.textContent = 0;
   totalScores[0] = 0;
   totalScores[1] = 0;
 
@@ -83,24 +101,21 @@ const newGame = function () {
   kaniRevengeTracker = [0, 0];
   bunbukuAltTextBool = false;
   fudaAltTextBool = false;
-  btnOfuda0.classList.add(`hidden`);
-  btnOfuda1.classList.add(`hidden`);
+  btnOfuda0.classList.add(HIDDEN);
+  btnOfuda1.classList.add(HIDDEN);
+}
 
-  // Clear log
-  gameLog.value = ``;
-  if (pointsRulesBool) {
-    gameLog.value += `You are playing a game with points rules. The first person to reach ${pointsToWin} will win the game!\n`;
-  } else {
-    gameLog.value += `You are playing a game with rounds rules. The game will end after ${roundsToEnd} turns.   If there is a tie at the end of ${roundsToEnd} rounds, then sudden death rounds will be added until there is no longer a tie.\n`;
-  }
+function resetTenguImg() {}
 
-  newTurn();
-};
-
-const drawCard = function () {
+function resetBackground() {
   // Set Tengu and background back to default settings
   document.querySelector(`.tengu-img`).src = `tenguCenter.png`;
-  document.querySelector("body").style.backgroundColor = `#242624`;
+  document.querySelector("body").style.backgroundColor = DARK_GRAY;
+}
+
+const drawCard = function () {
+  resetBackground();
+
   btnHold.disabled = false;
 
   if (tsuruBool) {
@@ -110,15 +125,17 @@ const drawCard = function () {
 
   // Remove any messages from Ikkyuu-san spell that might be present
   if (ikkyuuBool) {
-    document.getElementById(`msg--${activePlayer}`).classList.add(`hidden`);
+    document.getElementById(`msg--${activePlayer}`).classList.add(HIDDEN);
   }
 
-  cardEle.classList.remove(`hidden`);
-  btnSpell.classList.remove(`hidden`);
+  // TODO, seems like this is only relevant first turn
+  cardEle.classList.remove(HIDDEN);
+  btnSpell.classList.remove(HIDDEN);
 
-  let cardText = deck[shufflerArray[deckIndex]].cardText;
-  let points = deck[shufflerArray[deckIndex]].points;
-  let cardDrawn = deck[shufflerArray[deckIndex]].cardId;
+  // Actual card drawing function
+  const cardText = deck[shufflerArray[deckIndex]].cardText;
+  const points = deck[shufflerArray[deckIndex]].points;
+  const cardDrawn = deck[shufflerArray[deckIndex]].cardId;
   if (cardsWithSpells.includes(cardDrawn)) {
     btnSpell.disabled = false;
     btnSpell.textContent = `🔮 Use Spell`;
@@ -132,79 +149,30 @@ const drawCard = function () {
   //   btnSpell.textContent = `☑️ Spell used`;
   // }
 
-  let suppString = cardHandler(cardDrawn);
+  const suppString = cardHandler(cardDrawn);
   logTextHandler(cardDrawn, cardText, points, suppString);
 
+  // In the event that the user used Kintarou effect to go through entire deck,
+  // loop back from beginning of deck
   deckIndex = deckIndex === deck.length - 1 ? 0 : deckIndex + 1;
 };
 
 function endTurn() {
-  // Player gets extra points if ended turn with tsuru no ongaesi
-  if (tsuruBool) {
-    currentScore += tsuruBonus;
-    gameLog.value += `${playerNames[activePlayer]} received an extra ${tsuruBonus} points from the Tsuru no Ongaeshi bonus! \n`;
-    gameLog.scrollTop = gameLog.scrollHeight;
-    tsuruBool = false;
-  }
+  // resetTurnBools includes application of end of turn card effects
+  resetTurnBools();
 
-  if (tenguBool) {
-    tenguEffect();
-    tenguBool = false;
-    btnDraw.disabled = false;
-  }
-
-  if (ikkyuuBool) {
-    document.getElementById(`msg--${activePlayer}`).classList.add(`hidden`);
-  }
-
-  if (kamotoriBool) {
-    if (currentScore - kamotoriCounter >= 100) {
-      currentScore *= 2;
-      gameLog.value += `${playerNames[activePlayer]} won Kamo-tori Gonbei's gamble to double their points!\n`;
-      gameLog.scrollTop = gameLog.scrollHeight;
-    } else {
-      currentScore -= 100;
-      gameLog.value += `${playerNames[activePlayer]} lost Kamo-tori Gonbei's gamble and received a 100 point penalty!\n`;
-      gameLog.scrollTop = gameLog.scrollHeight;
-    }
-  }
-
-  // Turn off any boolean values that are no longer relevant
-  kintarouBool = false;
-  omusubiBool = false;
-  issunBool = false;
-  urashimaCounter = 0;
-  ikkyuuBool = false;
-  kamotoriCounter = 0;
-  kamotoriBool = false;
-  kobutoriCounter = false;
   // Re-enable hold button if Urashima effect had disabled it
   btnHold.disabled = false;
   btnHold.textContent = `⏹️ Hold`;
-
-  // Add any points gained/lost to total and update GUI
-  document.getElementById(`msg--${activePlayer}`).classList.remove(`hidden`);
-  document.getElementById(`msg--${activePlayer}`).textContent = `${
-    currentScore >= 0 ? `+` : ``
-  }${currentScore} points this round!`;
-  gameLog.value += `${playerNames[activePlayer]} earned ${
-    currentScore >= 0 ? `+` : ``
-  }${currentScore} points this round!`;
-  gameLog.scrollTop = gameLog.scrollHeight;
-
-  totalScores[activePlayer] += currentScore;
-  document.getElementById(`score--${activePlayer}`).textContent =
-    totalScores[activePlayer];
-  currentScore = 0;
-  document.getElementById(`current--${activePlayer}`).textContent =
-    currentScore;
 
   // Rounds Counter
   if (activePlayer == 1) {
     roundsCounter++;
   }
 
-  // End game conditions
+  computeScores();
+
+  // Check end game conditions
   if (pointsRulesBool) {
     if (totalScores[activePlayer] >= pointsToWin) {
       endGame();
@@ -221,23 +189,94 @@ function endTurn() {
     }
   }
 
-  // Disabling Ofuda button for player ending turn
+  // Switch player
+  switchPlayer();
+
+  resetPlayButtons();
+}
+
+function resetPlayButtons() {
+  // Hide all buttons
+  btnDraw.classList.toggle(HIDDEN);
+  btnSpell.classList.toggle(HIDDEN);
+  btnHold.classList.toggle(HIDDEN);
+
+  // Show new turn button
+  btnTurn.classList.toggle(HIDDEN);
+}
+
+function computeScores() {
+  // Add any points gained/lost to total and update GUI
+  document.getElementById(`msg--${activePlayer}`).classList.remove(HIDDEN);
+  document.getElementById(`msg--${activePlayer}`).textContent = `${
+    currentScore >= 0 ? `+` : ``
+  }${currentScore} points this round!`;
+  gameLog.value += `${playerNames[activePlayer]} earned ${
+    currentScore >= 0 ? `+` : ``
+  }${currentScore} points this round!`;
+  gameLog.scrollTop = gameLog.scrollHeight;
+
+  totalScores[activePlayer] += currentScore;
+  document.getElementById(`score--${activePlayer}`).textContent =
+    totalScores[activePlayer];
+  currentScore = 0;
+  document.getElementById(`current--${activePlayer}`).textContent =
+    currentScore;
+}
+
+function resetTurnBools() {
+  // Player gets extra points if ended turn with tsuru no ongaesi
+  if (tsuruBool) {
+    currentScore += tsuruBonus;
+    gameLog.value += `${playerNames[activePlayer]} received an extra ${tsuruBonus} points from the Tsuru no Ongaeshi bonus! \n`;
+    gameLog.scrollTop = gameLog.scrollHeight;
+    tsuruBool = false;
+  }
+
+  if (tenguBool) {
+    tenguEffect();
+    tenguBool = false;
+    btnDraw.disabled = false;
+  }
+
+  if (ikkyuuBool) {
+    document.getElementById(`msg--${activePlayer}`).classList.add(HIDDEN);
+  }
+
+  if (kamotoriBool) {
+    if (currentScore - kamotoriCounter >= 100) {
+      currentScore *= 2;
+      gameLog.value += `${playerNames[activePlayer]} won Kamo-tori Gonbei's gamble to double their points!\n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
+    } else {
+      currentScore -= 100;
+      gameLog.value += `${playerNames[activePlayer]} lost Kamo-tori Gonbei's gamble and received a 100 point penalty!\n`;
+      gameLog.scrollTop = gameLog.scrollHeight;
+    }
+  }
+  // Turn off any boolean values that are no longer relevant
+  kintarouBool = false;
+  omusubiBool = false;
+  issunBool = false;
+  urashimaCounter = 0;
+  ikkyuuBool = false;
+  kamotoriCounter = 0;
+  kamotoriBool = false;
+  kobutoriCounter = false;
+}
+
+function switchPlayer() {
+  activePlayer = activePlayer === 0 ? 1 : 0;
+  inactivePlayer = inactivePlayer === 0 ? 1 : 0;
+  player0Ele.classList.toggle(PLAYER_ACTIVE);
+  player1Ele.classList.toggle(PLAYER_ACTIVE);
+  player0Ele.classList.toggle(PLAYER_INACTIVE);
+  player1Ele.classList.toggle(PLAYER_INACTIVE);
+
+  // Disabling Ofuda button for player ending turn TODO should be conditional
   document
     .querySelector(`.ofuda--${activePlayer}`)
     .classList.add(`disabled-ofuda`);
-
-  // Switch player
-  activePlayer = activePlayer === 0 ? 1 : 0;
-  player0Ele.classList.toggle(`player--active`);
-  player1Ele.classList.toggle(`player--active`);
-
-  // Hide all buttons
-  btnDraw.classList.toggle(`hidden`);
-  btnSpell.classList.toggle(`hidden`);
-  btnHold.classList.toggle(`hidden`);
-
-  // Show new turn button
-  btnTurn.classList.toggle(`hidden`);
 }
 
 function endGame() {
@@ -252,15 +291,15 @@ function endGame() {
   // Add winning visual effects
   document
     .querySelector(`.player--${activePlayer}`)
-    .classList.add(`player--winner`);
+    .classList.add(PLAYER_WINNER);
 
-  document.querySelector(`.player--${opponent}`).classList.add(`player--loser`);
+  document.querySelector(`.player--${opponent}`).classList.add(PLAYER_LOSER);
 
   // Hide buttons
-  btnHold.classList.add(`hidden`);
-  btnSpell.classList.add(`hidden`);
-  btnDraw.classList.add(`hidden`);
-  btnNew.classList.toggle(`hidden`);
+  btnHold.classList.add(HIDDEN);
+  btnSpell.classList.add(HIDDEN);
+  btnDraw.classList.add(HIDDEN);
+  btnNew.classList.toggle(HIDDEN);
 
   // Show winning messages
   document.getElementById(
@@ -270,8 +309,8 @@ function endGame() {
   document.getElementById(
     `msg--${opponent}`
   ).textContent = `${playerNames[opponent]} suffers the curse of \n the TENGU!`;
-  document.getElementById(`msg--0`).classList.remove(`hidden`);
-  document.getElementById(`msg--1`).classList.remove(`hidden`);
+  document.getElementById(`msg--0`).classList.remove(HIDDEN);
+  document.getElementById(`msg--1`).classList.remove(HIDDEN);
 
   gameLog.value += `\n${playerNames[activePlayer]} has won! \n${playerNames[opponent]} has lost, and suffers the curse of the TENGU!\n`;
   gameLog.value += `Press "New Game" to play again! But beware of the TENGU! \n`;
@@ -292,6 +331,7 @@ function newTurn() {
   }
 
   //Enabling Ofuda for player starting turn
+  // This should be conditional TODO
   document
     .querySelector(`.ofuda--${activePlayer}`)
     .classList.remove(`disabled-ofuda`);
@@ -300,20 +340,20 @@ function newTurn() {
   gameLog.value += `\n>>> Begin ${playerNames[activePlayer]}'s turn!! >>>> \n`;
   gameLog.scrollTop = gameLog.scrollHeight;
   // Reveal all buttons
-  btnDraw.classList.toggle(`hidden`);
-  // btnSpell.classList.toggle(`hidden`);
-  btnHold.classList.toggle(`hidden`);
+  btnDraw.classList.toggle(HIDDEN);
+  // btnSpell.classList.toggle(HIDDEN);
+  btnHold.classList.toggle(HIDDEN);
 
   // Hide new turn button
-  btnTurn.classList.toggle(`hidden`);
-  btnSpell.classList.add(`hidden`);
+  btnTurn.classList.toggle(HIDDEN);
+  btnSpell.classList.add(HIDDEN);
 
-  roundMsg0.classList.add(`hidden`);
-  roundMsg1.classList.add(`hidden`);
+  // roundMsg0.classList.add(HIDDEN);
+  // roundMsg1.classList.add(HIDDEN);
 
   btnHold.disabled = true;
   btnDraw.disabled = false;
-  document.querySelector("body").style.backgroundColor = `#242624`;
+  document.querySelector("body").style.backgroundColor = DARK_GRAY;
   //Shuffle the deck
   shufflerArray = [...Array(deck.length).keys()]; // Creates an array of deck.length starting at 0
   let currentIndex = shufflerArray.length;
@@ -343,8 +383,8 @@ function newTurn() {
   deckIndex = 0;
 
   // Show card back at new turn
-  cardEle.classList.remove(`hidden`);
-  cardEle.src = `card back green conversion.png`;
+  // cardEle.classList.remove(HIDDEN);
+  // cardEle.src = `card back green conversion.png`;
 
   // Kasajizou Spell effect, maybe change later TODO
   if (kasajizouBool[activePlayer]) {
@@ -360,7 +400,7 @@ function newTurn() {
 
 function newRoundAnimation(roundText) {
   let roundAnimationText = document.querySelector(`.rounds-animation`);
-  roundAnimationText.classList.remove(`hidden`);
+  roundAnimationText.classList.remove(HIDDEN);
   roundAnimationText.style.animation = `none`;
   // if (roundsRulesBool && roundsCounter == roundsToEnd) {
   //   roundAnimationText.textContent = `FINAL ROUND`;
@@ -372,7 +412,7 @@ function newRoundAnimation(roundText) {
     roundAnimationText.style.animation = ``;
   }, 10);
   setTimeout(function () {
-    roundAnimationText.classList.add(`hidden`);
+    roundAnimationText.classList.add(HIDDEN);
   }, 3000);
 }
 
@@ -609,7 +649,7 @@ function useSpell() {
     case `sanmainoOfuda`: {
       document
         .querySelector(`.ofuda--${activePlayer}`)
-        .classList.remove(`hidden`);
+        .classList.remove(HIDDEN);
       ofudaBool[activePlayer] = true;
       onibabaBool[activePlayer] = true;
       gameLog.value += `${playerNames[activePlayer]} used the Sanmai no Ofuda spell to obtain one protective ofuda! \n`;
@@ -652,9 +692,7 @@ function useSpell() {
       gameLog.value += `${playerNames[activePlayer]} used Ikkyuu-san's spell and paid 75 points to peek at the identity of the next card! \n`;
       gameLog.value += `The next card you will draw is ${nextCard} \n`;
       gameLog.scrollTop = gameLog.scrollHeight;
-      document
-        .getElementById(`msg--${activePlayer}`)
-        .classList.remove(`hidden`);
+      document.getElementById(`msg--${activePlayer}`).classList.remove(HIDDEN);
       document.getElementById(
         `msg--${activePlayer}`
       ).textContent = `The next card you will draw is ${nextCard}`;
@@ -750,7 +788,7 @@ const ofudaHandler = function () {
     return;
   }
   ofudaBool[activePlayer] = false;
-  document.querySelector(`.ofuda--${activePlayer}`).classList.add(`hidden`);
+  document.querySelector(`.ofuda--${activePlayer}`).classList.add(HIDDEN);
   document.querySelector(`body`).style.backgroundColor = `#22b14c`;
   document.querySelector(`.tengu-img`).src = `tenguAlt.png`;
   // Make tengu face different

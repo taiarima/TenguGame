@@ -25,15 +25,15 @@ let warashibeMultiplier = 1;
 const deck = [
   {
     cardId: `saruKani`,
-    source: `saya monkeyattack with text.png`,
-    altSource: `saya kanirevenge.jpg  `,
+    source: `card_assets/saya monkeyattack with text.png`,
+    altSource: `card_assets/saya kanirevenge.jpg  `,
     points: 15,
     spell: true,
     cardText: `Monkey-Crab Quarrel`,
   },
   {
     cardId: `momotarou`,
-    source: `saya momotarou.png`,
+    source: `card_assets/saya momotarou.png`,
     altSource: null,
     points: 10,
     spell: false,
@@ -41,7 +41,7 @@ const deck = [
   },
   {
     cardId: `issunboushi`,
-    source: `03 Issnboushi.png`,
+    source: `card_assets/03 Issnboushi.png`,
     altSource: null,
     points: 20,
     spell: false,
@@ -49,7 +49,7 @@ const deck = [
   },
   {
     cardId: `tengu`,
-    source: `04 Tengu.png`,
+    source: `card_assets/04 Tengu.png`,
     altSource: null,
     points: 0,
     spell: false,
@@ -57,7 +57,7 @@ const deck = [
   },
   {
     cardId: `urashimaTarou`,
-    source: `05 Urashima Tarou.png`,
+    source: `card_assets/05 Urashima Tarou.png`,
     altSource: null,
     points: 15,
     spell: false,
@@ -65,7 +65,7 @@ const deck = [
   },
   {
     cardId: `tsurunoOngaeshi`,
-    source: `saya tsuru with text.png`,
+    source: `card_assets/saya tsuru with text.png`,
     altSource: null,
     points: 15,
     spell: false,
@@ -73,7 +73,7 @@ const deck = [
   },
   {
     cardId: `omusubiKororin`,
-    source: `07 Omusubi Kororin.png`,
+    source: `card_assets/07 Omusubi Kororin.png`,
     altSource: null,
     points: 15,
     spell: false,
@@ -81,7 +81,7 @@ const deck = [
   },
   {
     cardId: `sanmainoOfuda`,
-    source: `08-1 Sanmai no Ofuda.png`,
+    source: `card_assets/08-1 Sanmai no Ofuda.png`,
     altSource: `saya onibaba.jpg`,
     points: 15,
     altPoints: -100,
@@ -90,7 +90,7 @@ const deck = [
   },
   {
     cardId: `kintarou`,
-    source: `09 Kintarou.png`,
+    source: `card_assets/09 Kintarou.png`,
     altSource: null,
     points: 20,
     spell: true,
@@ -98,8 +98,8 @@ const deck = [
   },
   {
     cardId: `bunbukuChagama`,
-    source: `10-2 Bunbuku chagama.png`,
-    altSource: `10-1 Bunbuku chagama.png`,
+    source: `card_assets/10-2 Bunbuku chagama.png`,
+    altSource: `card_assets/10-1 Bunbuku chagama.png`,
     points: 30,
     altPoints: -25,
     spell: false,
@@ -107,7 +107,7 @@ const deck = [
   },
   {
     cardId: `kasaJizou`,
-    source: `11 Kasa Jizou.png`,
+    source: `card_assets/11 Kasa Jizou.png`,
     altSource: null,
     points: 5,
     spell: true,
@@ -115,7 +115,7 @@ const deck = [
   },
   {
     cardId: `warashibe`,
-    source: `12 Warashibe Tyouja.png`,
+    source: `card_assets/12 Warashibe Tyouja.png`,
     altSource: null,
     points: 15,
     spell: false,
@@ -123,7 +123,7 @@ const deck = [
   },
   {
     cardId: `kamotori`,
-    source: `13  kamotori gonbei.png`,
+    source: `card_assets/13  kamotori gonbei.png`,
     altSource: null,
     points: 15,
     spell: true,
@@ -131,7 +131,7 @@ const deck = [
   },
   {
     cardId: `ikkyuu`,
-    source: `14 ikkyuusan.png`,
+    source: `card_assets/14 ikkyuusan.png`,
     altSource: null,
     points: 25,
     spell: true,
@@ -139,7 +139,7 @@ const deck = [
   },
   {
     cardId: `kobutori`,
-    source: `15 kobutori jiisan.png`,
+    source: `card_assets/15 kobutori jiisan.png`,
     altSource: null,
     points: 25,
     spell: true,
@@ -168,6 +168,7 @@ let shufflerArray = [...Array(deck.length).keys()]; // Creates an array with asc
 let deckIndex = 0;
 let currentScore = 0;
 let activePlayer = 0;
+let inactivePlayer = 1;
 const totalScores = [0, 0];
 const winningScore = 1000;
 let playerNames = [];

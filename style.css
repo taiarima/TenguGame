@@ -107,6 +107,9 @@ main {
   border-radius: 15%;
   margin: 0 50px;
   border: 5px solid var(--color-red);
+
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 .card-area {
@@ -120,6 +123,8 @@ main {
 .play-card {
   width: 325px;
   margin: auto;
+  border-radius: 10%;
+  background-color: var(--color-dark-gray);
 }
 
 /* CSS for larger screens */
@@ -136,37 +141,39 @@ main {
   }
 
   .player-area {
-    margin: 0;
-  }
-  .active-player-area {
     width: 100%;
     border-radius: 0;
     margin: 5px 0;
-    /* border-top-left-radius: 100%;
-    border-top-right-radius: 100%;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0; */
-    height: 225px;
-  }
-  /* For the waiting player, flip the hemisphere to the bottom */
-  .waiting-player-area {
-    width: 100%;
-    border-radius: 0;
-    /* border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-left-radius: 50%;
-    border-bottom-right-radius: 50%; */
     height: 225px;
   }
 }
 
-.active-p-score,
+/* .active-p-score,
 .waiting-p-score {
   display: flex;
   flex-direction: column;
   text-align: center;
   font-size: 2rem;
   font-weight: bold;
+} */
+
+.score-card {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  /* font-size: 2rem;
+  font-weight: bold; */
+}
+
+.active-player {
+  background-color: lightgray;
+}
+
+.inactive-player {
+  background-color: darkslategray;
+  color: white;
+  font-weight: normal;
+  opacity: 80%;
 }
 
 .player {
@@ -262,7 +269,7 @@ main {
 } */
 
 .btn--new {
-  top: 3%;
+  top: 15%;
 }
 .btn--draw {
   top: 80%;
@@ -274,7 +281,12 @@ main {
   top: 90%;
 }
 .btn--spell {
-  top: 3%;
+  top: 10%;
+  left: 55%;
+  width: 50px;
+  opacity: 80%;
+  font-weight: bolder;
+  border: 2px solid black;
 }
 .btn--log {
   bottom: 5%;
